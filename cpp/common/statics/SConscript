@@ -1,0 +1,6 @@
+Import('builder')
+
+builder.Library('ordered-function-registry',
+        'ordered-function-registry.cc', libs = [])
+builder.AddBoostTest('ordered-function-registry_test.cc',
+        libs = ['@ordered-function-registry',])

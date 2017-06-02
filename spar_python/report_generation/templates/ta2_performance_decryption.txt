@@ -1,0 +1,6 @@
+\subsection{Decryption}
+\label{sec:emp_he_decryption}
+
+We provide descriptive statistics for decryption time in Table \ref{tab:decryptionlatency}.
+
+{{ outp.decryption_table }}

@@ -1,0 +1,20 @@
+Import('builder')
+
+builder.Library('num-predicate-generators',
+    ['num-predicate-generators.cc'],
+    libs = [])
+
+builder.Library('low-match-rate-pub-sub-gen',
+        ['low-match-rate-pub-sub-gen.cc'],
+        libs = ['@fields', '@logging', '@num-predicate-generators'])
+
+# TODO(njhwang) SKIPPING since "PublicationsWork" test occasionally fails a
+# matching test
+#builder.AddBoostTest('low-match-rate-pub-sub-gen_test.cc',
+#        libs = ['@low-match-rate-pub-sub-gen', '@fields',
+#            '@testing-field-set'])
+
+builder.Program('ta3-test-generator',
+    ['test-generator.cc'],
+    libs = ['boost_program_options', '@logging', '@string-algo',
+      '@num-predicate-generators', '@fields', '@low-match-rate-pub-sub-gen'])

@@ -1,0 +1,3 @@
+WaitScript 6
+CallRemoteScript sh-0 set-3-sh-0-update-subscriptions
+WaitScript 15

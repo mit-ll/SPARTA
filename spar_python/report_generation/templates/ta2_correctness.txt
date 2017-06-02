@@ -1,0 +1,16 @@
+\section{Empirical Evaluation: Correctness}
+\label{sec:emp_he_correctness}
+
+In this section, we present all of the correctness metrics observed during our tests of {{config.performerprototype}}.
+These metrics are aggregated over all of the tested databases and presented together, since we do not expect correctness to be impacted by database size.
+
+The correctness definitions given in the Test Plan state that 
+\emph{circuit evaluation accuracy} is the fraction of circuit evaluations which were correct.
+Additionally, we provide 
+the \emph{count} (the total number of queries run), 
+the \emph{circuit precision} (the probability that an evaluation should output 1 given that it did output 1), and 
+the \emph{circuit recall} (the probability that an evaluation outputs 1 given that it should).
+
+The query correctness results in Table \ref{tab:corr} were observed during the tests performed on {{config.performerprototype}}.
+
+{{outp.correctness_table}}

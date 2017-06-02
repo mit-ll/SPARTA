@@ -1,0 +1,13 @@
+<!DOCTYPE suppressions PUBLIC
+    "-//Puppy Crawl//DTD Suppressions 1.1//EN"
+    "http://www.puppycrawl.com/dtds/suppressions_1_1.dtd">
+
+<suppressions>
+   <!-- More relaxed rules for test code -->
+   <suppress checks="MagicNumberCheck" files=".*Test.java"/>
+   <suppress checks="AvoidStarImport" files=".*Test.java"/>
+   <suppress checks="JavadocMethod" files=".*Test.java"/>
+   <suppress checks="JavadocType" files=".*Test.java"/>
+   <suppress checks="JavadocVariable" files=".*Test.java"/>
+   <suppress checks="JavadocStyle" files=".*Test.java"/>
+</suppressions>

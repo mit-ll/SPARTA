@@ -1,0 +1,9 @@
+{% extends "ta1_overview_p1_eqandordnf.txt" %}
+
+{% block idgraphdescription %}
+The following curve describes the latency (`{{ config.var_ql }}') of \texttt{select id} {{ outp.query_cat }}-{{ outp.query_subcat }} queries as a function of the number of records returned (`{{ config.var_nummatches }}') and the number of records matching the first term of the conjunction (`{{ config.var_firstmatches }}'), with $r^2$ value ${{ outp.id_rsquared }}$:
+{% endblock %}
+
+{% block stargraphdescription %}
+The following curve describes the latency (`{{ config.var_ql }}') of \texttt{select *} {{ outp.query_cat }}-{{ outp.query_subcat }} queries as a function of the number of records returned (`{{ config.var_nummatches }}') and the number of records matching the first term of the conjunction (`{{ config.var_firstmatches }}'), with $r^2$ value ${{ outp.star_rsquared }}$:
+{% endblock %}

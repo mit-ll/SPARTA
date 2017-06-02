@@ -1,0 +1,17 @@
+\subsection{Modifications}
+\label{sec:emp_dbs_modifications}
+
+For each modification type, we provide 
+\begin{itemize}
+\item the number of modifications run, 
+\item the number of modifications that failed (not counted towards any further metrics),
+\item the number of modifications that didn't have sufficient accompanying info (such as pre-modification queries) to determine correctness (not counted towards any further metrics), 
+\item the number of modifications which were determined to have been incorrectly executed through post-modification queries,
+\item the number of modifications which were determined to have been correctly executed through post-modification queries, 
+\item the smallest latency between the completion of a modification and the completion of a correct post-modification query, and 
+\item the largest latency between the completion of a modification and the completion of an incorrect post-modification query.
+\end{itemize}
+
+The modification results in Table \ref{tab:mods} were observed during the tests performed on {{config.performerprototype}}.
+
+{{outp.modification_table}}

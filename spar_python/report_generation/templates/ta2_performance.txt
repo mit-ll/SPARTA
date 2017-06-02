@@ -1,0 +1,3 @@
+\section{Empirical Evaluation: Performance}
+\label{sec:emp_he_performance}
+In this section, we give an overview of the latency results for {{ config.performername }}.

@@ -1,0 +1,5 @@
+0 0 (school_enrolled = 'College_undergraduate') AND (citizenship = 'Yes_Born_Abroad_US_Parents') AND (city = 'Rio Verde') AND (marital_status = 'Never_Married')
+1 0 (military_service = 'Previous_Active_Duty') OR (address = '382 Austin Cir') OR ((school_enrolled = 'College_undergraduate') AND (city = 'Rio Verde') AND (income = 59300) AND (citizenship = 'Yes_Born_Abroad_US_Parents') AND (zip = '16280'))
+2 0 fname = 'SHARLA'
+3 0 race = 'African_American'
+4 0 ssn = '513224472'

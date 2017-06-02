@@ -1,0 +1,6 @@
+\subsection{Query Percentiles}
+\label{sec:emp_dbs_performance_percentiles}
+
+The following table provides a summary of the number of percentiles passing the 8 + 5x requirement for each database size and query type. In this table, `DBNR' refers to the number of records in the database, and `DBRS' refers to the record size.
+
+{{ outp.query_percentiles_table }}

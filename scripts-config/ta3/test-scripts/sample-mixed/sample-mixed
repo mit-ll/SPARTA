@@ -1,0 +1,7 @@
+UpdateNetworkMap 1 5
+CallRemoteScript sh-0 sh-0-background-subscriptions
+RootModeMasterScript CLEARCACHE
+PublishAndModifySubscriptionsScript all-publications EXPONENTIAL_DELAY 1000000 408037055 1000 all-modifications
+WaitScript 20
+RootModeMasterScript SHUTDOWN
+WaitScript 15

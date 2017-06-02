@@ -1,0 +1,28 @@
+\section{Introduction}
+
+\section{Protocol Overview}
+\subsection{Parties and Threat Model}
+\subsection{Supported Query Types}
+\subsection{Supported Policies}
+\subsection{Correctness}
+\subsection{Protocol Summary}
+\subsection{Computational Assumptions}
+
+\section{Overall Assessment}
+\subsection{Fulfillment of BAA Requirements}
+\subsection{Strengths}
+\subsection{Weaknesses}
+\subsection{Suggestions for Improvement}
+
+\section{Security Properties}
+\subsection{Summary}
+\subsection{Security against the Client}
+\subsection{Security against the Server}
+\subsection{Security against the Third Party}
+\subsection{Security against the Network}
+
+\section{Test Evaluation}
+\subsection{Summary}
+\subsection{Test Configuration}
+\subsection{Supported Queries}
+\subsection{Performer System and Implementation Notes}

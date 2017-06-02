@@ -1,0 +1,7 @@
+Import('builder')
+
+builder.Library('fingerprint-generator', 'fingerprint-generator.cpp',
+        libs = [])
+
+builder.AddBoostTest('fingerprint_test.cpp',
+        libs = ['@fingerprint-generator', '@logging'])

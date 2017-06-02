@@ -1,0 +1,16 @@
+\subsection{ {% block sectionheader %} {{ outp.query_cat }} - {{ outp.query_cat_name }} {% endblock %} }
+
+For the {{ outp.main_database_name }}, {{ outp.query_cat }} query correctness for the {{ outp.num_queries }} queries run was characterized by a recall of {{ outp.recall }} and a precision of {{ outp.precision }}. {{ outp.badhash_fraction }} of the records returned had corrupted content (but had the expected id).
+For {{ outp.query_cat }} correctness information for other database sizes, please refer to Section \ref{sec:emp_dbs_correctness}.
+
+{% block latencycontent %}
+{% if outp.common_latency_graph %}
+The following graph describes {{ outp.query_cat }} query latency as a function of the number of records returned for the primary database:
+
+{{ outp.common_latency_graph }}
+
+{% endif %}
+{% endblock %}
+
+{% block querytypespecificcontent %}
+{% endblock %}

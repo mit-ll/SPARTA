@@ -1,0 +1,81 @@
+\documentclass[12pt,titlepage]{article}
+
+\usepackage{geometry}
+\geometry{letterpaper}
+\usepackage{fullpage}
+\usepackage{multirow}
+\usepackage{url}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{amsfonts}
+\usepackage{makeidx}
+\usepackage{graphicx}
+\usepackage{xspace}
+\usepackage{mdwlist}
+\usepackage{soul} % for highlighting
+%\usepackage[textsize=tiny]{todonotes} % add "disable" field before sending out!
+\usepackage{longtable}
+\usepackage{float}
+\PassOptionsToPackage{usenames,dvipsnames,svgnames,table}{color} % for coloring table cells
+\usepackage[table]{xcolor} % for coloring table cells
+% cvw: packages for the big DRAFT watermark on each page
+\usepackage{type1cm}
+\usepackage{eso-pic}
+\usepackage{color}
+\usepackage{hyperref}
+\usepackage{url}
+
+\makeatletter
+%% cvw: code for the big DRAFT watermark on each page
+\AddToShipoutPicture{
+\setlength{\@tempdimb}{.5\paperwidth}
+\setlength{\@tempdimc}{.5\paperheight}
+\setlength{\unitlength}{1pt}
+\put(\strip@pt\@tempdimb,\strip@pt\@tempdimc){
+\makebox(0,0){\rotatebox{45}{\textcolor[gray]{0.80}
+{\fontsize{6cm}{6cm}\selectfont{DRAFT}}}}
+}
+}
+%% end of the big DRAFT watermark
+% Mayank: add line break after use of paragraph
+\renewcommand\paragraph{
+\@startsection{paragraph}{4}{0mm}
+{-\baselineskip}
+{.5\baselineskip}
+{\normalfont\normalsize\bfseries}}
+\makeatother
+
+\title{ \bf
+Security and Performance Evaluation of {{ config.performername}} \\
+Phase 2 Deliverable\\
+SPAR Program Technical Area {{ config.tanum }}
+}
+
+\author{
+\begin{tabular}{c}
+{\testteam}\\
+{\tt spar-lincoln@ll.mit.edu}
+\end{tabular}}
+
+\date{Version 0\\ \today}
+
+\makeindex
+
+\begin{document}
+
+\newcommand{\sophiasays}[1]{} % this is to override to-do notes in any of the documents
+\newcommand{\testteam}{MIT/LL Evaluation Team\xspace}
+\newcommand{\query}{\ensuremath{\mathbf{q}}\xspace}
+\newcommand{\record}{\ensuremath{\mathbf{r}}\xspace}
+\newif\ifprintpercentiles
+\printpercentilesfalse
+
+\maketitle
+
+\tableofcontents
+
+\pagebreak
+
+{{ outp.sections }}
+
+\end{document}

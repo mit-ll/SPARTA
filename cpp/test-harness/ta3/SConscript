@@ -1,0 +1,83 @@
+Import('builder')
+
+builder.SConscript('fields/SConscript')
+builder.SConscript('pub-sub-gen/SConscript')
+builder.SConscript('commands/SConscript')
+
+builder.Library('publication-received-handler',
+    ['publication-received-handler.cc'],
+    libs = ['@hash-aggregator', '@general-logger', '@knot',
+      '@protocol-extension-manager', '@test-util']) 
+
+builder.Library('disconnection-received-handler',
+    ['disconnection-received-handler.cc'],
+    libs = ['@general-logger', '@knot', '@protocol-extension-manager',
+            '@ta3-slave-harness-network-stack']) 
+
+builder.Library('harness-info-request-handler',
+    ['harness-info-request-handler.cc'],
+    libs = ['@common-baseline-protocols'])
+
+builder.AddBoostTest('harness-info-request-handler_test.cc',
+    libs = ['@harness-info-request-handler', '@util',
+            '@extensible-ready-handler-fixture', '@logging', '@test-util'])
+
+builder.Library('ta3-slave-harness-network-stack',
+    ['slave-harness-network-stack.cc'],
+    libs = ['@harness-info-request-handler', '@th-commands'])
+
+builder.AddBoostTest('slave-harness-network-stack_test.cc',
+    libs = ['@ta3-slave-harness-network-stack', '@network-protocol-stack'])
+
+builder.Library('ta3-client-sut-protocol-stack',
+    ['multi-client-sut-protocol-stack.cc',
+     'client-sut-protocol-stack.cc'],
+    libs = ['@sut-util', '@ta3-client-commands',
+      '@publication-received-handler', '@disconnection-received-handler',
+      '@ta3-slave-harness-network-stack', '@test-util'])
+
+builder.AddBoostTest('client-sut-protocol-stack_test.cc',
+    libs = ['@ta3-client-sut-protocol-stack'])
+
+builder.AddBoostTest('multi-client-sut-protocol-stack_test.cc',
+    libs = ['@ta3-client-sut-protocol-stack'])
+
+builder.Library('ta3-master-harness-network-listener',
+    ['master-harness-network-listener.cc'],
+    libs = ['@network-protocol-stack', '@th-commands'])
+
+builder.AddBoostTest('master-harness-network-listener_test.cc',
+    libs = ['@ta3-master-harness-network-listener',
+      '@ta3-slave-harness-network-stack'])
+
+builder.Library('ta3-server-sut-protocol-stack',
+    ['server-sut-protocol-stack.cc'],
+    libs = ['@sut-util', '@ta3-server-commands', '@test-util'])
+
+builder.AddBoostTest('server-sut-protocol-stack_test.cc',
+    libs = ['@ta3-server-sut-protocol-stack'])
+
+builder.Library('event-message-fixture',
+    ['event-message-fixture.cc'],
+    libs = ['@publication-received-handler', '@event-loop', 
+      '@line-raw-parser'])
+
+builder.AddBoostTest('publication-received-handler_test.cc',
+    libs = ['@event-message-fixture', '#boost_regex', '@general-logger'])
+
+builder.SConscript('scripts/SConscript')
+
+builder.Program('ta3-slave-harness',
+        ['slave-harness.cc'],
+        libs = ['@logging', 'boost_program_options', '@general-logger',
+            '@network-protocol-stack',
+            '@ta3-client-sut-protocol-stack', '@ta3-scripts',
+            '@ta3-slave-harness-network-stack',
+            '@periodic-real-time-logger'])
+
+builder.Program('ta3-master-harness',
+        ['master-harness.cc'],
+        libs = ['@logging', 'boost_program_options', '@general-logger',
+            '@ta3-scripts', '@ta3-server-sut-protocol-stack',
+            '@ta3-master-harness-network-listener', '@scripts-from-file',
+            '@periodic-real-time-logger'])

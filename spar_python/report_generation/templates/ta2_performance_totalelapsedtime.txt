@@ -1,0 +1,19 @@
+\subsection{Total Elapsed Time}
+\label{sec:emp_he_totalelapsedtime}
+
+{{ outp.totalelapsedtimepercentiles_graph }}
+{{ outp.totalelapsedtimeratio_graph }}
+
+The average {{ config.performername }} to {{ config.baselinename }} total elapsed time ratio was ${{ outp.meantotalelapsedtimeratio }}$.
+
+{% if outp.baamet %}
+
+At all 100 percentiles, the overhead of {{ config.performerprototype }} compared to the baseline is below the ${{ config.baaratio }}$ factor required in the BAA. 
+Thus, {{ config.performername }} fulfills requirement TA2-P2.
+
+{% else %}
+
+At {{ 100 - outp.nummet }} out of 100 percentiles, the overhead of {{ config.performerprototype }} compared to the baseline is above the ${{ config.baaratio }}$ factor required in the BAA.
+Thus, {{ config.performername }} does not fulfill requirement TA2-P2.
+
+{% endif %}

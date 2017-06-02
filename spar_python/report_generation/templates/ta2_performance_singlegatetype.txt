@@ -1,0 +1,6 @@
+\subsection{Evaluation Time By Gate Type}
+\label{sec:emp_he_singlegatetype}
+
+Table \ref{tab:singlegatetype} describes the evaluation time per gate of each type.
+
+{{ outp.singlegatetype_table }}

@@ -1,0 +1,21 @@
+Import('builder')
+
+builder.Library('ta1-scripts',
+        ['query-list-script.cc', 'modify-argument-script.cc',
+         'unloaded-query-latency-script.cc',
+         'variable-delay-query-script.cc',
+         'variable-delay-modify-argument-script.cc',
+         'modify-and-query-script.cc',
+         'unloaded-modify-argument-script.cc',
+         'verify-script.cc', 'root-mode-master-script.cc'],
+        libs = ['@logging', '@ta1-commands', '@line-raw-data',
+            '@test-script', '@call-remote-script',
+            '@root-mode-local-script'])
+
+builder.AddBoostTest('unloaded-query-latency-script_test.cc',
+        libs = ['@ta1-scripts', '#boost_thread', '@logging',
+             '@ready-monitor-fixture'])
+
+builder.Library('setup-client-harness-scripts',
+        'setup-client-harness-scripts.cc',
+        libs = ['@ta1-scripts',])

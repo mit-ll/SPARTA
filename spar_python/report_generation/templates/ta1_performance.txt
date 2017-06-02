@@ -1,0 +1,4 @@
+\section{Empirical Evaluation: Query Performance}
+\label{sec:emp_dbs_performance}
+
+In this section, we present all of the query performance metrics observed during our tests of {{config.performerprototype}}.

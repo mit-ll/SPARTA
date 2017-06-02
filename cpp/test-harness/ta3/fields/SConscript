@@ -1,0 +1,21 @@
+Import('builder')
+
+builder.Library('fields', 
+        ['equi-probable-closed-set-field.cc', 'field-set.cc',
+         'date-field.cc', 'integer-field.cc',],
+        libs = ['@knot', '@logging'],)
+
+builder.Library('testing-field-set', 'testing-field-set.cc',
+        libs = ['@string-algo', '@logging'])
+
+builder.AddBoostTest('equi-probable-closed-set-field_test.cc',
+        libs = ['@fields', ])
+
+builder.AddBoostTest('field-set_test.cc',
+        libs = ['@fields', '@testing-field-set',])
+
+builder.AddBoostTest('date-field_test.cc',
+        libs = ['@fields',])
+
+builder.AddBoostTest('integer-field_test.cc',
+        libs = ['@fields',])

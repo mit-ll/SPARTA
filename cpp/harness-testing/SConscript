@@ -1,0 +1,20 @@
+Import('builder')
+
+builder.Program('silly-client', 'silly-client.cc',
+        libs = ['@logging', 'boost_program_options', ])
+
+builder.Program('dummy-ta3-client', 'dummy-ta3-client.cc',
+        libs = ['@logging', '@string-algo'])
+
+builder.Program('dummy-ta3-server', 'dummy-ta3-server.cc',
+        libs = ['@logging', '@string-algo'])
+
+builder.Program('silly-throughput', 'silly-throughput.cc',
+        libs = ['@logging', '@util', '@timer', 'boost_program_options'])
+
+builder.Program('c-style-throughput', 'c-style-throughput.cc',
+        libs = ['@logging', '@util', '@timer', 'boost_program_options'])
+
+builder.Program('event-loop-throughput', 'event-loop-throughput.cc',
+        libs = ['@logging', '@timer', 'boost_program_options',
+            '@ready-monitor', '@line-raw-parser', '@util'])

@@ -1,0 +1,37 @@
+Import('builder')
+
+builder.Library('ta3-scripts',
+        ['update-network-map-script.cc', 'call-remote-script.cc', 
+         'root-mode-master-script.cc',
+         'root-mode-multi-client-local-script.cc', 'publish-script.cc',
+         'subscribe-script.cc', 'unsubscribe-script.cc',
+         'multi-wait-for-final-publication-script.cc',
+         'wait-for-final-publication-script.cc', 
+         'wait-script.cc', 'publish-and-modify-subscriptions-script.cc'],
+        libs = ['@logging', '@ta3-server-commands', '@ta3-client-commands',
+                '@line-raw-data', '@test-script', '@root-mode-local-script',
+                '#boost_thread', '@string-algo', '@num-predicate-generators',
+                '@periodic-real-time-logger'])
+
+# TODO (njhwang) SKIPPING since occassionally experiences "Unexpected shutdown
+# of SUT" error
+#builder.AddBoostTest('setup-master-harness-scripts_test.cc',
+#    libs = ['@ta3-master-harness-network-listener',
+#    '@ta3-slave-harness-network-stack', '@ta3-server-sut-protocol-stack',
+#    '@ta3-scripts', '@scripts-from-file'])
+
+builder.AddBoostTest('setup-slave-harness-scripts_test.cc',
+    libs = ['@ta3-client-sut-protocol-stack',
+    '@ta3-scripts', '@script-manager'])
+
+builder.AddBoostTest('publish-script_test.cc',
+    libs = ['@ta3-scripts', '#boost_thread', '@logging',
+    '@ready-monitor-fixture', '@test-util'])
+
+builder.AddBoostTest('subscribe-script_test.cc',
+    libs = ['@ta3-scripts', '#boost_thread', '@logging',
+    '@ta3-client-sut-protocol-stack'])
+
+builder.AddBoostTest('unsubscribe-script_test.cc',
+    libs = ['@ta3-scripts', '#boost_thread', '@logging',
+    '@ta3-client-sut-protocol-stack'])

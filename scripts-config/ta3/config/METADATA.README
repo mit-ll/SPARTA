@@ -1,0 +1,25 @@
+The 'min_byte_size' and 'max_byte_size' columns are relevant for 'string' and
+'date' type data, and specify the min/max string lengths that will occur in the
+dataset.  Performers are free to store 'enum' and 'integer' types with as many
+bytes as desired, so we do not impose any byte size restrictions for these
+types.
+
+The 'min_value' and 'max_value' columns are relevant for 'integer' type data,
+and specify the min/max values that are possible in the dataset. If either min
+or max is not specified, then the range is unbounded in that direction.
+Performers can use this to determine the data type and byte size with which to
+store each integer.
+
+The 'num_values' column is relevant for 'enum' type data, and specify how many
+unique values there will be for each enum in the dataset.
+
+The type 'date' refers to a string representing a date in the form 'YYYY-MM-DD'.
+
+The columns 'zip' and 'ssn' will be purely numeric strings of the specified
+lengths.
+
+TODO(njhwang) should we have some sets of files that list all our enum values
+for each column? I imagine that we want our inequality comparisons on enums to
+refer to the underlying int and not the string itself, so it would be important
+for performers to know what strings map to what ints. But I guess that's
+debatable, and no one's said anything yet.

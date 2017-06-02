@@ -1,0 +1,97 @@
+Import('builder')
+
+builder.Library('ready-monitor', 'ready-monitor.cc',
+        libs = ['@logging', '#boost_thread', '@event-loop',
+                '@protocol-extension-manager'])
+builder.Library('ready-monitor-fixture', 'ready-monitor-fixture.cc',
+        libs = ['@ready-monitor'])
+builder.AddBoostTest('ready-monitor_test.cc',
+        libs = ['@line-raw-parser', '@ready-monitor', '@util',
+                '@ready-monitor-fixture'])
+
+builder.Library('event-message-monitor', 'event-message-monitor.cc',
+        libs = ['@protocol-extension-manager'])
+builder.Library('event-message-monitor-fixture', 
+        'event-message-monitor-fixture.cc',
+        libs = ['@event-message-monitor', '@event-loop', '@line-raw-parser'])
+builder.AddBoostTest('event-message-monitor_test.cc',
+        libs = ['@event-message-monitor-fixture', '@util', '@knot'])
+
+builder.Library('generic-numbered-command',
+        'generic-numbered-command.cc',
+        libs = ['@numbered-command-sender', '@logging', '@general-logger'])
+
+builder.Library('root-mode-command-sender',
+        ['root-mode-command-sender.cc'],
+        libs = ['@ready-monitor', '@line-raw-parser'])
+builder.Library('root-mode-commands',
+        ['root-mode-commands.cc'],
+        libs = ['@root-mode-command-sender', '@general-logger'])
+builder.AddBoostTest('root-mode-commands_test.cc',
+        libs = ['@root-mode-commands', '@ready-monitor-fixture',
+                '@test-util'])
+
+builder.Library('numbered-command-counter', 'numbered-command-counter.cc',
+        libs = ['@statics',])
+builder.AddBoostTest('numbered-command-counter_test.cc',
+        libs = ['@numbered-command-counter', '#boost_thread', 'boost_system'])
+
+builder.Library('numbered-command-sender',
+        ['numbered-command-sender-base.cc', 'numbered-command-sender.cc',
+         'agg-numbered-command-sender.cc', 'multi-numbered-command-sender.cc'],
+        libs = ['@knot', '@logging', '@ready-monitor', '@line-raw-parser',
+                '@string-algo', '@numbered-command-counter',
+                '@event-message-monitor'])
+builder.AddBoostTest('numbered-command-sender_test.cc',
+        libs = ['@ready-monitor', '@numbered-command-sender',
+            '@util', '@string-algo', '@ready-monitor-fixture'])
+builder.AddBoostTest('multi-numbered-command-sender_test.cc',
+        libs = ['@ready-monitor', '@numbered-command-sender',
+                '@ready-monitor-fixture'])
+builder.AddBoostTest('agg-numbered-command-sender_test.cc',
+        libs = ['@numbered-command-sender', '@ready-monitor-fixture',])
+
+builder.Library('test-script', 'test-script.cc',
+        libs = ['#boost_thread', '@logging'])
+
+builder.Library('script-manager', 'script-manager.cc',
+        libs = ['@knot', '@logging', ])
+
+builder.Library('scripts-from-file',
+        ['scripts-from-file.cc', 'log-file-generator.cc'],
+        libs = ['@logging', '@test-script'])
+builder.AddBoostTest('scripts-from-file_test.cc',
+        libs = ['@scripts-from-file'])
+
+builder.Library('th-commands',
+        ['th-run-script-command.cc', 'th-run-script-handler.cc'],
+        libs = ['@numbered-command-sender', '@common-baseline-protocols',
+                '@test-script', '@script-manager'])
+
+builder.Library('call-remote-script', 'call-remote-script.cc',
+        libs = ['@test-script', '@general-logger',
+                '@th-commands',])
+
+builder.Library('network-protocol-stack', 'network-protocol-stack.cc',
+        libs = ['@logging', '@numbered-command-sender', '@ready-monitor'])
+
+builder.AddBoostTest('run-script-over-network_test.cc',
+        libs = ['@th-commands', '@test-script', '@event-loop',
+                '@network-protocol-stack'])
+
+builder.Library('sut-util', 
+        ['sut-protocol-stack.cc', 'spawn-sut.cc'],
+        libs = ['@ready-monitor',
+                '@logging', '@root-mode-command-sender'])
+
+builder.AddBoostTest('spawn-sut_test.cc',
+        libs = ['@sut-util', '@generic-numbered-command',
+        '@numbered-command-sender', '@test-util'])
+
+builder.AddBoostTest('delay-generators_test.cc',
+        libs = ['@logging'])
+
+builder.Library('root-mode-local-script',
+        ['root-mode-local-script.cc'],
+        libs = ['@logging', '@line-raw-data',
+            '@test-script'])

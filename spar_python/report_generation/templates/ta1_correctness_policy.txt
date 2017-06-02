@@ -1,0 +1,6 @@
+\subsection{Query Policy Correctness}
+\label{sec:emp_dbs_correctness_policy}
+
+The query policy correctness definitions given in the Test Plan state that \emph{policy precision} is the probability that a query does not conform to the policy given that it was rejected, and that \emph{policy recall} is the probability that a query is rejected given that it does not conform to the policy. Additionally, we provide the \emph{count} (the total number of queries run with policy enforcement).The query policy correctness results in Table \ref{tab:policy_corr} were observed during the tests performed on {{ config.performerprototype }}.
+
+{{outp.policy_correctness_table}}

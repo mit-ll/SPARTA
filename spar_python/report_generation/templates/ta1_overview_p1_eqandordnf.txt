@@ -1,0 +1,57 @@
+{% extends "ta1_overview_common_subcat.txt" %}
+
+{% block latencycontent %}
+
+{% if outp.id_graph or outp.star_graph %}
+
+The following graphs describe \texttt{select id} and \texttt{select *} {{ outp.query_cat }}-{{ outp.query_subcat }} query latency.
+
+{% if outp.id_graph %}
+
+{{ outp.id_graph }}
+
+{% if outp.id_functionstr %}
+
+{% block idgraphdescription %}
+{% endblock %}
+
+$${{ outp.id_functionstr }}$$
+
+{% endif %}
+
+{% endif %}
+
+{% if outp.id_higher_order_functionstr and outp.id_higher_order_rsquared %}
+
+{% block idhigherorder %} 
+{% endblock %}
+
+{% endif %}
+
+{% if outp.star_graph %}
+
+{{ outp.star_graph }}
+
+{% if outp.star_functionstr %}
+
+{% block stargraphdescription %}
+{% endblock %}
+
+$${{ outp.star_functionstr }}$$
+
+For {{ outp.query_cat }}-{{ outp.query_subcat }} performance information for the other databases, please refer to Section \ref{sec:emp_dbs_performance}.
+
+{% endif %}
+
+{% endif %}
+
+{% if outp.star_higher_order_functionstr and outp.star_higher_order_rsquared %}
+
+{% block starhigherorder %} 
+{% endblock %}
+
+{% endif %}
+
+{% endif %}
+
+{% endblock %}

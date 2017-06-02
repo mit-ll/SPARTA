@@ -1,0 +1,13 @@
+{% extends "ta1_overview_common.txt" %}
+
+{% block querytypespecificcontent %}
+
+{% if outp.latency_by_keywordlen_graph %}
+
+The following box plot describes {{ outp.query_cat_name }} query latency as it varies with the keyword length, for queries returning between {{ outp.keywordlen_numrecords_min }} and {{ outp.keywordlen_numrecords_max }} records each:
+
+{{ outp.latency_by_keywordlen_graph }}
+
+{% endif %}
+
+{% endblock %}

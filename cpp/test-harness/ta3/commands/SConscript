@@ -1,0 +1,19 @@
+Import('builder')
+
+builder.Library('ta3-client-commands',
+        ['subscribe-command.cc', 'unsubscribe-command.cc'],
+        libs = ['@generic-numbered-command', 
+            '@logging', '@general-logger'])
+
+builder.Library('ta3-server-commands',
+        ['publish-command.cc'],
+        libs = ['@generic-numbered-command', 
+            '@logging', '@general-logger', '@hash-aggregator'])
+
+builder.AddBoostTest('subscribe-command_test.cc',
+        libs = ['@ta3-client-commands', '@ready-monitor-fixture', '@test-util'])
+builder.AddBoostTest('unsubscribe-command_test.cc',
+        libs = ['@ta3-client-commands', '@ready-monitor-fixture', '@test-util'])
+builder.AddBoostTest('publish-command_test.cc',
+        libs = ['@ta3-server-commands', '@ready-monitor-fixture', '@test-util'])
+

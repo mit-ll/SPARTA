@@ -1,0 +1,29 @@
+Import('builder')
+
+builder.Library('test-harness-streams', ['stream-util.cc'],
+        libs = ['@logging'])
+
+builder.Library('message-handlers', ['key-message-handler.cc',
+        'circuit-message-handler.cc', 'input-message-handler.cc'],
+        libs = ['@test-harness-streams', '@logging', '@timer',
+        '@string-algo'])
+
+builder.Library('test-script', ['test-script.cc'],
+        libs = ['@test-harness-streams', '@message-handlers',
+            '@logging', '@timer', '@util'])
+
+builder.Program('ta2-test-harness', ['test-harness-main.cc'],
+        libs = ['@test-script', 'boost_program_options'])
+builder.env.Install('$INSTALL_DIRECTORY', 'ta2-test-harness')
+
+builder.Program('ta2-dummy-client', ['dummy-client.cc'], 
+        libs = ['@logging', '@string-algo'])
+builder.env.Install('$INSTALL_DIRECTORY', 'ta2-dummy-client')
+
+builder.AddBoostTest('stream-util_test.cc', libs = ['@test-harness-streams'])
+
+builder.AddBoostTest('key-message-handler_test.cc', 
+        libs = ['@message-handlers'])
+
+builder.AddBoostTest('circuit-message-handler_test.cc',
+        libs = ['@message-handlers'])

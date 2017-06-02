@@ -1,0 +1,29 @@
+\subsection{Evaluation}
+\label{sec:emp_he_evaluation}
+
+Evaluation time was highly correlated with {{ config.var_depth }} and {{ config.var_numbatches }}. It also showed a little correlation with {{ config.var_batchsize }}, which again we believe is a result of parameters being selected jointly. We graph evaluation time as a function of {{ config.var_numbatches }} and {{ config.var_depth }}, and provide best-fit models of evaluation time as a function of {{ config.var_numbatchs }} and {{config.var_depth }} as well as of evaluation time as a function of {{ config.var_numbatchs}}, {{ config.var_depth }} and  {{ config.var_batchsize }}.
+In addition, evaluation time will be affected by the choice of the security parameter {{ config.var_secparam }}. Since only two values of {{ config.var_secparam }} were tested, we present data captured using each security parameter, ${{ config.var_secparam }} = 80$ and ${{ config.var_secparam }} = 128$, separately. 
+
+The best-fit model for ${{ config.var_secparam }} = 80$ is$${{ outp.evaluation_functionstr80 }}$$
+with an $r^2$ value of ${{ outp.evaluation_rsquared80 }}$.
+
+Including {{ config.var_batchsize }}, the best-fit model for ${{ config.var_secparam }} = 80$ is 
+$${{ outp.evaluation_complexfunctionstr80 }}$$
+with an $r^2$ value of ${{ outp.evaluation_complexrsquared80 }}$.
+
+{{ outp.evaluation_graph80 }}
+
+The best-fit model for ${{ config.var_secparam }} = 128$ is$${{ outp.evaluation_functionstr128 }}$$
+with an $r^2$ value of ${{ outp.evaluation_rsquared128 }}$.
+
+Including {{ config.var_batchsize }}, the best-fit model for ${{ config.var_secparam }} = 128$ is 
+$${{ outp.evaluation_complexfunctionstr128 }}$$
+with an $r^2$ value of ${{ outp.evaluation_complexrsquared128 }}$.
+
+{{ outp.evaluation_graph128 }}
+
+Table \ref{tab:evaluatedciphertextsizes} and Figure \ref{fig:evaluatedciphertextsizes} provide descriptive statistics for evaluated ciphertext sizes.
+
+{{ outp.ciphertextsize_table}}
+
+{{ outp.ciphertextsize_graph}}

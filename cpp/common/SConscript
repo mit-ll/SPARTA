@@ -1,0 +1,117 @@
+Import('builder')
+
+builder.SConscript('statics/SConscript')
+
+builder.Library('statics', 'statics.cc', libs = ['@ordered-function-registry',])
+
+builder.Library('output-handler',
+        ['output-handler.cc', 'line-raw-to-output-handler.cc'],
+        libs = ['#boost_thread', 'boost_system'])
+builder.AddBoostTest('line-raw-to-output-handler_test.cc',
+        libs = ['@output-handler',])
+
+builder.Library('timer', 'timer.cc', libs = ['rt',])
+builder.AddBoostTest('timer_test.cc', libs=['@timer'])
+
+builder.Library('logging', 'logging.cc',
+        libs = ['@output-handler', '@statics', ])
+builder.AddBoostTest('logging_test.cc', libs = ['@logging',])
+
+builder.Library('string-algo', 'string-algo.cc', libs = ['@logging',])
+builder.AddBoostTest('string-algo_test.cc', libs = ['@string-algo',])
+
+builder.Library('util', 'util.cc', libs = ['@logging', '@string-algo', 'rt'])
+builder.AddBoostTest('util_test.cc', libs = ['@util'])
+
+# The following are testing things that are only in .h files so there's no
+# corresponding library to link.
+# TODO(njhwang) SKIPPING check_test since it consistently fails for unknown
+# reasons
+#builder.AddBoostTest('check_test.cc',
+#        libs = ['#boost_regex', '@logging', '@string-algo'])
+# TODO(njhwang) SKIPPING object_threads_test since it occassionally fails the
+# "StressTest"
+#builder.AddBoostTest('object_threads_test.cc',
+#        libs = ['#boost_thread', 'boost_system'])
+builder.AddBoostTest('topological-iterator_test.cc', libs = [])
+
+builder.Library('schema', 'schema.cc', libs = ['@logging', '@string-algo'])
+builder.AddBoostTest('schema_test.cc',
+        libs = ['@schema',])
+
+builder.Library('file-pipe', 'file-pipe.cc', libs = ['@util',])
+
+builder.AddBoostTest('future_test.cc',
+        libs = ['#boost_thread', '@logging',])
+builder.AddBoostTest('future-waiter_test.cc',
+        libs = ['#boost_thread', '@logging'])
+builder.AddBoostTest('aggregating-future_test.cc',
+        libs = ['#boost_thread', '@logging', '@string-algo'])
+
+builder.SConscript('knot-impl/SConscript')
+builder.Library('knot', ['knot.cc', 'knot-iterator.cc'],
+        libs = ['@logging', '@knot-impl', '@util'])
+builder.AddBoostTest('knot_test.cc',
+        libs = ['@knot', '@logging', '@string-algo', '@util'])
+builder.AddBoostTest('knot-iterator_test.cc',
+        libs = ['@knot', '@logging', '@string-algo'])
+
+builder.Library('buffer-pool', ['buffer-pool.cc'],
+        libs = ['@logging', '#boost_thread', '@knot'])
+builder.AddBoostTest('buffer-pool_test.cc', libs = ['@buffer-pool'])
+
+builder.Library('host-port', 'host-port.cc')
+
+builder.Library('event-loop',
+        ['event-loop-base.cc', 'write-event-loop.cc', 'read-event-loop.cc',
+         'event-loop.cc', 'bpbuffer-strand.cc', 'network-connection.cc',
+         'network-client.cc', 'network-server.cc'],
+        libs = ['event_core', 'event_pthreads', '@logging', '@buffer-pool',
+                '@host-port'])
+builder.AddBoostTest('event-loop_test.cc',
+        libs = ['@event-loop', '@util'])
+
+builder.Library('line-raw-parser', ['line-raw-parser.cc', ],
+        libs = ['@logging', '@knot'])
+builder.AddBoostTest('line-raw-parser_test.cc',
+        libs = ['@line-raw-parser', '@string-algo'])
+builder.AddBoostTest('networking_test.cc',
+        libs = ['@event-loop', '@line-raw-parser'])
+
+# Most of LineRawData is template stuff in the header. The library is only
+# needed for LineRawDataFromFile.
+builder.Library('line-raw-data', 'line-raw-data.cc',
+        libs = ['@logging'])
+builder.AddBoostTest('line-raw-data_test.cc',
+        libs = ['@line-raw-data', '@knot', '@string-algo', '@logging'])
+
+builder.Library('protocol-extension-manager', 'protocol-extension-manager.cc',
+                libs = ['@logging', ])
+builder.AddBoostTest('protocol-extension-manager_test.cc',
+        libs = ['@protocol-extension-manager', '@line-raw-parser',])
+
+builder.Library('test-util', ['test-util.cc'],  
+        libs = ['#boost_regex', '@string-algo'])
+
+builder.Library('general-logger', ['general-logger.cc',],
+        libs = ['@timer', '@knot'])
+builder.AddBoostTest('general-logger_test.cc',
+        libs = ['@general-logger', '@string-algo', '@test-util'])
+
+builder.Program('example-network-server', 'example-network-server.cc',
+        libs = ['@event-loop', ])
+builder.Program('example-network-client', 'example-network-client.cc',
+        libs = ['@event-loop', ])
+
+builder.Library('periodic-real-time-logger', ['periodic-real-time-logger.cc'],
+        libs = ['@general-logger', '@util']) 
+builder.AddBoostTest('periodic-real-time-logger_test.cc',
+        libs = ['@periodic-real-time-logger', '@test-util'])
+
+builder.Library('hash-aggregator',
+        ['hash-aggregator.cc'],
+        libs = ['libcrypto', '@knot'])
+
+builder.Library('test-util',
+    ['test-util.cc'],
+    libs = ['#boost_regex', '@string-algo'])

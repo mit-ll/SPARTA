@@ -1,0 +1,1 @@
+*,,,,,cat,sub_cat,perf,fields,"['no_queries','r_lower','r_upper']",EQ,eq,['LL'],"['fname','lname','city','zip']","[10,1,10]","[5,11,100]"EQ,eq,['LL'],['foo'],"[50,1,10]","[50,11,100]"

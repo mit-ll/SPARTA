@@ -1,0 +1,21 @@
+import os.path
+import subprocess
+import tempfile
+import sys
+# The SconsCPPHelper does all the "real" work. See that class and the README for
+# more information.
+from scons_cpp_helper import SconsCPPHelper
+
+# This defines our environment, unit testing funcitonality, etc. It then gets
+# build targets from SConscript files. All build targets should be added there.
+Import('common')
+
+helper = SconsCPPHelper()
+
+helper.SConscript('common/SConscript')
+helper.SConscript('third-party/SConscript')
+helper.SConscript('baseline/SConscript')
+helper.SConscript('test-harness/SConscript')
+helper.SConscript('harness-testing/SConscript')
+helper.SConscript('data-generation/SConscript')
+

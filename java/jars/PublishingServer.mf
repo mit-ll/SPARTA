@@ -1,0 +1,4 @@
+Manifest-Version: 0.3
+Class-Path: third_party/jewelcli/jewelcli-0.7.6.jar third_party/slf4j/slf4j-api-1.5.11.jar third_party/slf4j/slf4j-simple-1.5.11.jar third_party/activemq/activemq-all-5.5.1.jar third_party/opencsv/opencsv-2.3.jar
+Main-Class: edu.mit.ll.spar.ta3.actors.PublishingServer
+

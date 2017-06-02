@@ -1,0 +1,10 @@
+{% extends "ta1_overview_common_subcat.txt" %}
+
+{% block latencycontent %}
+{% if outp.common_latency_graph %}
+The following graph describes {{ outp.query_cat }} query latency as a function of the number of records returned for the primary database:
+
+{{ outp.common_latency_graph }}
+
+{% endif %}
+{% endblock %}

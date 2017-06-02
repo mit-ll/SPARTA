@@ -1,0 +1,18 @@
+{% extends "ta1_overview_p1_eqandordnf.txt" %}
+
+{% block idgraphdescription %}
+The following curve describes the latency (`{{ config.var_ql }}') of \texttt{select id} {{ outp.query_cat }}-{{ outp.query_subcat }} queries as a function of the number of records returned (`{{ config.var_nummatches }}') and the sum of the number of records matching the first conjunctive term of each disjunctive clause (`{{ config.var_sumfirstmatches }}'), with $r^2$ value ${{ outp.id_rsquared }}$:
+{% endblock %}
+
+{% block idhigherorder %}
+Factoring in the number of clauses (`{{ config.var_numclauses }}') and the number of terms per clause (`{{ config.var_numterms }}'), we observe the following curve with $r^2$ value ${{ outp.id_higher_order_rsquared }}$:$${{ outp.id_higher_order_functionstr }}$$
+{% endblock %}
+
+{% block stargraphdescription %}
+The following curve describes the latency (`{{ config.var_ql }}') of \texttt{select *} {{ outp.query_cat }}-{{ outp.query_subcat }} queries as a function of the number of records returned (`{{ config.var_nummatches }}') and the sum of the number of records matching the first conjunctive term of each disjunctive clause  (`{{ config.var_sumfirstmatches }}'), with $r^2$ value ${{ outp.star_rsquared }}$:
+{% endblock %}
+
+{% block starhigherorder %}
+Factoring in the number of clauses (`{{ config.var_numclauses }}') and the number of terms per clause (`{{ config.var_numterms }}'), we observe the following curve with $r^2$ value ${{ outp.star_higher_order_rsquared }}$:
+$${{ outp.star_higher_order_functionstr }}$$
+{% endblock %}

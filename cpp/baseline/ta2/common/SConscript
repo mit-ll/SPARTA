@@ -1,0 +1,3 @@
+Import('builder')
+
+builder.Library('baseline', ['baseline.cc'])

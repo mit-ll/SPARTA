@@ -1,0 +1,28 @@
+name,type,table,length,index
+id,BIGINT UNSIGNED,base:notes:fingerprint,0,false
+fname,CHAR,base,11,false
+lname,CHAR,base,15,false
+ssn,CHAR,base,9,false
+dob,DATE,base,0,false
+address,CHAR,base,100,false
+city,CHAR,base,35,false
+state,ENUM,base,0,false
+zip,CHAR,base,5,false
+sex,ENUM,base,0,false
+race,ENUM,base,0,false
+marital_status,ENUM,base,0,false
+school_enrolled,ENUM,base,0,false
+citizenship,ENUM,base,0,false
+income,INT,base,0,false
+military_service,ENUM,base,0,false
+language,ENUM,base,0,false
+hours_worked_per_week,SMALLINT UNSIGNED,base,0,false
+weeks_worked_last_year,TINYINT UNSIGNED,base,0,false
+last_updated,INT UNSIGNED,base,0,false
+foo,BIGINT UNSIGNED,base,0,false
+notes1,TEXT,notes,10000,false
+notes2,TEXT,notes,2000,false
+notes3,VARCHAR,notes,250,true
+notes4,VARCHAR,notes,50,true
+xml,TEXT,base,10000,false
+fingerprint,MEDIUMBLOB,fingerprint,16777215,false

@@ -1,0 +1,51 @@
+{% if outp.resource_graphs %}
+
+\section{Empirical Evaluation: System Resource Utilization}
+\label{sec:emp_utilization}
+
+In this section we present all of the system utilizaiton metrics observed during our tests of {{config.performerprototype}}.
+We measured the CPU, memory, disk I/O, and network I/O used by performer systems during testing.  The graphs below describe 
+the amount of system resources used by the performers. 
+
+{% if outp.cpu_resource_graphs %}
+
+\subsection{CPU Resource Graphs}
+
+{% for graph in outp.cpu_resource_graphs %}
+{{ graph }}
+{% endfor %}
+
+{% endif %}
+
+{% if outp.disk_resource_graphs %}
+
+\subsection{Disk Resource Graphs}
+
+{% for graph in outp.disk_resource_graphs %}
+{{ graph }}
+{% endfor %}
+
+{% endif %}
+
+{% if outp.network_resource_graphs %}
+
+\subsection{Network Resource Graphs}
+
+{% for graph in outp.network_resource_graphs %}
+{{ graph }}
+{% endfor %}
+
+{% endif %}
+
+{% if outp.ram_resource_graphs %}
+
+\subsection{RAM Resource Graphs}
+
+{% for graph in outp.ram_resource_graphs %}
+{{ graph }}
+{% endfor %}
+
+{% endif %}
+
+
+{% endif %}

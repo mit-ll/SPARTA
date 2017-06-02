@@ -1,0 +1,6 @@
+Import('builder')
+
+builder.SConscript('common/SConscript')
+builder.SConscript('ta1/SConscript')
+builder.SConscript('ta2/SConscript')
+builder.SConscript('ta3/SConscript')

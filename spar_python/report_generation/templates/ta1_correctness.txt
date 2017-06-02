@@ -1,0 +1,5 @@
+\section{Empirical Evaluation: Database Correctness}
+\label{sec:emp_dbs_correctness}
+
+In this section, we present all of the correctness metrics observed during our tests of {{config.performerprototype}}.
+These metrics are aggregated over all of the tested databases and presented together, since we do not expect correctness to be impacted by database size.

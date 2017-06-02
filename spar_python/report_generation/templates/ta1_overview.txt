@@ -1,0 +1,3 @@
+\section{Empirical Evaluation: Overview of Results for the {{ outp.maindb_short_name }}}
+\label{sec:emp_overview}
+In this section, we give an overview of the correctness and performance results for the {{ outp.maindb_short_name_lower }} (the {{ outp.maindb_long_name_lower }}) for each query type.

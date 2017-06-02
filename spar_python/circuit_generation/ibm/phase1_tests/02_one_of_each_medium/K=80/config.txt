@@ -1,0 +1,8 @@
+test_type = RANDOM
+num_circuits = 1
+num_inputs = 1
+K = 80
+L = 600
+D = 18
+W = 20
+generate = True

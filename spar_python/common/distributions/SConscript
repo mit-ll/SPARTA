@@ -1,0 +1,15 @@
+import os
+Import('common')
+
+# TODO(njhwang): This seems to interfere with the build process. chdir appears
+# to modify the working directory such that any builds happening in parallel
+# will lose the context they were intended to have. This can usually be worked
+# around by running the SCons build multiple times until the Cython code gets
+# built.
+cython_bld = Builder(action = 'python setup.py build_ext --inplace',
+                              suffix = '.so',
+                              src_suffix = '.pyx',
+                              chdir = 1)
+
+env = Environment(ENV = os.environ, BUILDERS = {'CythonBld' : cython_bld})
+env.CythonBld('text_generator')

@@ -1,0 +1,15 @@
+{% extends "ta1_overview_common_subcat.txt" %}
+
+{% block latencycontent %}
+
+{% if outp.success %}
+
+We have confirmed that {{ config.performername }} supports {{ outp.query_name.lower() }}.
+
+{% else %}
+
+{{ config.performername }} has not successfully run any {{ outp.query_name.lower() }}. 
+
+{% endif %}
+
+{% endblock %}

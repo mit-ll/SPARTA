@@ -1,0 +1,25 @@
+\section{Introduction}
+
+\section{Protocol Overview}
+\subsection{Supported Circuit Classes}
+\subsection{Protocol Summary}
+\subsection{Applications to Private Information Retrieval}
+\subsection{Performance Costs}
+
+\section{Overall Assessment}
+\subsection{Fulfillment of BAA Requirements}
+\subsection{Strengths}
+\subsection{Weaknesses}
+\subsection{Suggestions for Improvement}
+
+\section{Cryptographic Analysis}
+\subsection{Correctness}
+\subsection{Semantic Security}
+\subsection{Computational Assumptions}
+\subsection{Additional Propertiels}
+\subsection{Adversarial Model Analysis}
+
+\section{Test Evaluation}
+\subsection{Summary}
+\subsection{Test Configuration}
+\subsection{Performer System and Implementation Notes}

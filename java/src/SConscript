@@ -1,0 +1,129 @@
+import os.path
+import os
+
+Import('env', 'common')
+
+# This build file should automatically handle all .java and Test.java files in
+# any of the directories listed in src_dirs. All files will be automatically
+# found and built and any Test.java files will have a unit test target named
+# run_<ClassNameTest> added for them.
+#
+# This also creates a checkstyle alias that runs checkstyle on all the java
+# source code.
+
+# Source directories to search for *.java files.
+sdirs = (
+    'edu/mit/ll/spar/',
+    )
+
+# Third party jar's that need to be in the CLASSPATH.
+# TODO(odain) This adds all resources required by all project to the class path.
+# Perhaps it should be split up so we're not wasting time searching resources
+# that aren't needed?
+# TODO(njhwang) Why aren't the API versions for Ubuntu's default slf4j and
+#               logback jar's matching up?
+# TODO(njhwang) Look into SCons configure contexts
+javac_class_path = [
+    'java/jars/third_party/junit/junit-4.10.jar',
+    'java/jars/third_party/activemq/activemq-all-5.5.1.jar',
+    'java/jars/third_party/jewelcli/jewelcli-0.7.6.jar',
+    'java/jars/third_party/slf4j/slf4j-api-1.5.11.jar',
+    'java/jars/third_party/slf4j/slf4j-simple-1.5.11.jar',
+    'java/jars/third_party/opencsv/opencsv-2.3.jar',
+    ]
+
+# Adding directory where classes will be compiled to the test CLASSPATH.
+test_class_path = list(javac_class_path)
+test_class_path.insert(0, 'java/classes')
+
+# Populating the CLASSPATH for checkstyle. checkstyle will be run from
+# java/checkstyle/, so the relative paths must be updated appropriately.
+# TODO(njhwang) Best way to address the commons-logging dependency?
+#               Add to third_party?
+check_class_path = list(test_class_path)
+check_class_path.extend([
+    'java/jars/third_party/checkstyle/checkstyle-5.4.jar',
+    '/usr/share/java/commons-logging-1.1.1.jar',
+    ])
+
+# Set javac parameters and flags.
+env.Replace(JAVACLASSPATH = javac_class_path)
+# Ensures that we see unchecked cast warnings.
+env.Replace(JAVACFLAGS = '-Xlint:unchecked')
+
+def target_path_to_class(tpath):
+    """tpath is a scons relative path to a java target. This converts that path
+    to a java class name. This is used to build the name of the target passed to
+    the JavaTest pseudo-builder."""
+    path_parts = tpath.split(os.path.sep)
+    classes_idx = path_parts.index('classes')
+    class_name = '.'.join(path_parts[classes_idx + 1:])
+    return class_name.rstrip('.class')
+
+def find_all_java_files(sdirs):
+    """checkstyle needs a path to every single *.java file that needs to be
+    audited, so this helper method is used to recurse through a list of
+    directories and return a list of all discovered *.java files."""
+    all_java_files = []
+    for sdir in sdirs:
+        sdir_ls = [x.get_abspath() for x in Glob(sdir + '*')]
+        for sfile in sdir_ls:
+            if os.path.isdir(sfile):
+                all_java_files.extend(find_all_java_files([sfile + '/']))
+            elif sfile.endswith('.java'):
+                all_java_files.append(sfile)
+    return all_java_files   
+
+# Build all *.java files and run all *Test.java files. Note that
+# env.Java will recurse through directories.
+all_build_targets = []
+for sdir in sdirs:
+    build_targets = env.Java('../classes', sdir, JAVAVERSION='1.6')
+    all_build_targets.append(build_targets)
+    for btar in build_targets:
+        if str(btar).endswith('Test.class'):
+            test_class = os.path.basename(str(btar)).rstrip('.class')
+            test_alias = 'run_' + test_class
+            env.JavaTest(test_alias, target_path_to_class(str(btar)), btar,
+                         classpath = test_class_path)
+
+# Run checkstyle.
+all_java_files = find_all_java_files(sdirs)
+env.JavaCheckstyle('checkstyle', all_java_files, all_build_targets, 
+    classpath = check_class_path)
+
+# Build desired *.jar files
+#
+# Due to the way SCons implements the Jar function, a few things need to be
+# worked around. Here are all the considerations:
+# - The working directory when the 'jar' command is executed will be from the
+# root directory (i.e., the 'java' directory will be visible from the working
+# directory), even though this SConscript file is in the 'java/src' directory.
+# - In order to preserve the package hierarchy that classes expect to have when
+# they are run, the *.jar must be built from the 'java/classes' directory. The
+# JARCHDIR argument can facilitate this, but must be relative to the working
+# directory when the 'jar' command executes.
+# - The source files must be listed relative to the directory this SConscript
+# file is in (i.e., no matter what JARCHDIR is set to).
+# - JARCHDIR will change the effective path for EVERY source file listed. 
+# - Manifest files will only be detected if the string 'Manifest-Version' (case
+# sensitive) is the first set of characters in ANY source file, and will be
+# assumed to be the manifest file for the *.jar being built.
+# 
+# Currently, we require the Class-Path be set in each manifest file to
+# reference all third party *.jars required to run the specified Main-Class.
+# Class-Path entries are space-separated and should be relative to where the
+# *.jar of interest will be executed from. We currently have a
+# 'jars/third-party' directory and expect our *.jar files to be populated in the
+# 'jars' directory.
+# TODO(njhwang) implement *.jar loading to create more portable executables
+env.Jar(target = '../jars/PublishingBroker.jar', source = ['../classes/edu',
+  '../jars/PublishingBroker.mf'], JARCHDIR = 'java/classes')
+env.Jar(target = '../jars/SubscribingClient.jar', source = ['../classes/edu',
+  '../jars/SubscribingClient.mf'], JARCHDIR = 'java/classes')
+env.Jar(target = '../jars/PublishingServer.jar', source = ['../classes/edu',
+  '../jars/PublishingServer.mf'], JARCHDIR = 'java/classes')
+env.Jar(target = '../jars/ThirdPartyBroker.jar', source = ['../classes/edu',
+  '../jars/ThirdPartyBroker.mf'], JARCHDIR = 'java/classes')
+
+# TODO add Clean command to recursively clean up directories in classes

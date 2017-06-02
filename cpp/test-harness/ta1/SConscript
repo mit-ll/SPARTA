@@ -1,0 +1,42 @@
+Import('builder')
+
+# Note: libcrypto is part of openssl. If missing apt-get install openssl-dev
+# should do the trick.
+builder.Library('row-hash-aggregator', 'row-hash-aggregator.cc',
+        libs = ['libcrypto', '@knot'])
+builder.AddBoostTest('row-hash-aggregator_test.cc',
+        libs = ['@row-hash-aggregator', '#boost_regex',
+                '@string-algo'])
+
+builder.Library('ta1-commands',
+        ['insert-command.cc', 'update-command.cc', 'delete-command.cc',
+         'query-command.cc', 'verify-command.cc'],
+        libs = ['@generic-numbered-command', '@logging', '@general-logger', 
+                '@row-hash-aggregator'])
+builder.AddBoostTest('insert-command_test.cc',
+        libs = ['@ta1-commands', '@ready-monitor-fixture', '@test-util'])
+builder.AddBoostTest('update-command_test.cc',
+        libs = ['@ta1-commands', '@ready-monitor-fixture', '@test-util'])
+builder.AddBoostTest('delete-command_test.cc',
+        libs = ['@ta1-commands', '@ready-monitor-fixture', '@test-util'])
+builder.AddBoostTest('query-command_test.cc',
+        libs = ['@ta1-commands', '@ready-monitor-fixture', '@test-util'])
+
+builder.SConscript('scripts/SConscript')
+
+builder.Program('ta1-client-harness',
+        ['client-sut-protocol-stack.cc', 'client-harness.cc',
+         'master-harness-network-listener.cc'],
+        libs = ['@logging', 'boost_program_options', '@general-logger',
+            '@setup-client-harness-scripts', '@network-protocol-stack',
+            '@th-commands', '@sut-util', '@scripts-from-file', '@util',
+            '@periodic-real-time-logger'])
+builder.env.Install('$INSTALL_DIRECTORY', 'ta1-client-harness')
+
+builder.Program('ta1-server-harness',
+        ['server-harness.cc', 'server-sut-protocol-stack.cc',
+         'slave-network-stack.cc'],
+        libs = ['@logging', '@sut-util', '@general-logger', '@ta1-scripts',
+            '@th-commands', 'boost_program_options',
+            '@periodic-real-time-logger'])
+builder.env.Install('$INSTALL_DIRECTORY', 'ta1-server-harness')

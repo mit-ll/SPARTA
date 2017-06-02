@@ -1,0 +1,34 @@
+\section{Empirical Evaluation: Percentile Figures}
+\label{sec:perc_aux}
+
+In this section, we provide percentile plots for the performance of the performer and the baseline for all of our database sizes and query types. Then, we provide tables that summarize the performance of the performer relative to the baseline.
+
+{% for database in outp.databases %}
+	\subsection{ {{ outp.databases[database].name }} }
+
+	{% for querycat in outp.databases[database].query_cats %}
+
+		\subsubsection{ {{ querycat.name }} }
+
+		{{ querycat.percentiles_graph }}
+
+		{{ querycat.percentiles_cnt_chart }}
+
+		{{ querycat.percentiles_max_chart }}
+
+		{{ querycat.percentiles_min_chart }}
+
+	       \ifprintpercentiles{
+
+		Performer Percentiles: 
+
+		{{ querycat.performer_percentiles }}
+
+		Baseline Percentiles:
+
+		{{ querycat.baseline_percentiles }}
+               }\fi
+
+	{% endfor %}
+
+{% endfor %}

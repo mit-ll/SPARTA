@@ -1,0 +1,7 @@
+\subsection{Circuit Ingestion}
+\label{sec:emp_he_ingestion}
+Ingestion time was mildly correlated with {{ config.var_batchsize }}, but we attribute this to the fact that the bit representation of a circuit description increases with {{ config.var_batchsize }} (since gates with constant parameters need at least {{ config.var_batchsize }} bits to describe). 
+
+
+{{ outp.ingestion_table }}
+Circuit descriptions for {{ config.performername }} varied in the kilobyte to low megabyte range. The ingestion times we observed are negligible compared to the time taken for other parts of the scheme. We believe that the ingestion times we observed depended primarily on the simple task of parsing rather than on any complexity of {{ config.performername }}'s scheme.

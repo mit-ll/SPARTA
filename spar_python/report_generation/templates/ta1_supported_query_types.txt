@@ -1,0 +1,14 @@
+\section{Empirical Evaluation: Supported Query Types}
+\label{sec:emp_dbs_supportedquerytypes}
+
+The following table describes the atomic query types supported by {{config.performername}}.
+In this table, `pass' indicates that {{config.performername}} passed tests successfully (i.e. at least one query was executed correctly), 
+`fail' indicates that {{config.performername}} failed the tests (i.e. did not execute a single query correctly), 
+`-' indicates that no tests were run because {{config.performername}} indicated that they do not support the given functionality, and 
+`N/A' indicates that queries of the given type do not apply to the given data type.
+
+{{outp.atomic_queries_table}}
+
+The following table describes the composite query types supported by {{config.performername}}.
+
+{{outp.composite_queries_table}}

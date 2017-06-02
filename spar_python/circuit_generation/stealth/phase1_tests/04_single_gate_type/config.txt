@@ -1,0 +1,13 @@
+seed = 69517167
+K = 'default'
+fam = 3
+W = 10
+D = 6
+num_circuits = 2
+num_inputs = 5
+test_type = AND
+generate = True
+test_type = OR
+generate = True
+test_type = XOR
+generate = True

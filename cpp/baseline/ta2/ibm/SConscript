@@ -1,0 +1,35 @@
+import SCons.Script as scons
+Import('builder')
+
+builder.Library('ibm-circuit-gates', 
+        ['binary-gate.cc','unary-gate.cc', 'rotate.cc'], 
+        libs = ['@logging'])
+
+flex_outputs = builder.Flex('ibm-scanner.l')
+lemon_outputs = builder.Lemon('ibm-parser.y')
+
+ibm_parser_lib = builder.Library('ibm-scanner',
+        flex_outputs + lemon_outputs,
+        libs = ['@ibm-circuit-gates', '@logging'],
+        CCFLAGS = builder.env['CCFLAGS'] + ' -Wno-unused-variable ' +
+        ' -Wno-unused-function')
+
+scons.Depends(ibm_parser_lib, flex_outputs)
+scons.Depends(ibm_parser_lib, lemon_outputs)
+
+builder.Library('ibm-circuit-parser', ['ibm-circuit-parser.cc'],
+        libs = ['@ibm-circuit', '@ibm-scanner'])
+
+builder.Library('ibm-circuit', ['circuit.cc'],
+        libs = ['@ibm-circuit-gates'])
+
+builder.Library('ibm-baseline', ['ibm-baseline.cc'],
+        libs = ['@baseline', '@ibm-circuit-parser'])
+
+builder.Program('ta2-ibm-baseline-server', 'ibm-baseline-main.cc',
+        libs = ['@ibm-baseline'])
+builder.env.Install('$INSTALL_DIRECTORY', 'ta2-ibm-baseline-server')
+
+builder.AddBoostTest('ibm-gate_test.cc', libs = ['@ibm-circuit-gates'])
+builder.AddBoostTest('ibm-circuit-parser_test.cc',
+        libs = ['@ibm-circuit-gates', '@ibm-circuit-parser', '@ibm-circuit'])

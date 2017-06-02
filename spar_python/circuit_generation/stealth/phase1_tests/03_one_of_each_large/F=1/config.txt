@@ -1,0 +1,10 @@
+seed = 29639537
+K = 'default'
+test_type = RANDOM
+num_circuits = 1
+num_inputs = 1
+fam = 1
+W = 200
+G = 100000
+fg = .9
+generate = True

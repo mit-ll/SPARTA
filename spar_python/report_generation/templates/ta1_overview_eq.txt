@@ -1,0 +1,13 @@
+{% extends "ta1_overview_common.txt" %}
+
+{% block sectionheader %} Equalities {% endblock %}
+
+{% block querytypespecificcontent %}
+
+The following graph describes equality query latency as a function of the number of records returned split up by field type queried for the {{ outp.maindb_short_name_lower }}:
+
+{{ outp.latency_by_fieldtype_graph }}
+
+For equality performance information for the other databases, please refer to Section \ref{sec:emp_dbs_performance}.
+
+{% endblock %}

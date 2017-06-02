@@ -1,0 +1,14 @@
+Import('builder')
+
+builder.Library('client-protocols', ['query-handler.cc',],
+        libs = ['@common-baseline-protocols', '@mysql-connection',
+                '@timer', '#boost_regex', '@stemmer'])
+
+builder.AddBoostTest('query-handler_test.cc',
+        libs = ['@client-protocols',])
+
+builder.Program('ta1-baseline-client', ['mysql-main.cc',],
+        libs = ['@output-handler', '@client-protocols', '@mysql-connection',
+                '@statics', '@common-baseline-protocols', 
+                'boost_program_options'])
+builder.env.Install('$INSTALL_DIRECTORY', 'ta1-baseline-client')

@@ -1,0 +1,9 @@
+Import('builder')
+
+builder.Library('knot-impl', ['strand.cc', 'knot-node-deque.cc'],
+        libs = ['@logging',])
+
+builder.AddBoostTest('knot-node-deque_test.cc',
+        libs = ['@knot-impl', '@string-algo'])
+
+

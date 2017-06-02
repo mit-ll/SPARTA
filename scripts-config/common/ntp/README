@@ -1,0 +1,2 @@
+This directory contains configuration templates and scripts for running both an NTP server and multiple clients that sync to that server. Refer to the scripts and config templates for details.
+

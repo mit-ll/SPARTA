@@ -1,0 +1,227 @@
+Test Script Generation
+
+
+There is one script that will generate latency, performance, and
+smoke tests and a second script that will generate modification tests.
+
+
+---------------------------------------------------------------------
+WARNING: It is best to run both scripts once for all database
+sizes. Re-running them for one database at a time will not work. This
+is because the testcases are numbered starting at 1, also the
+create_modification_scripts.py file creates the test queries starting
+at 1 that get added to the result_database. The goal is after all the
+tests are run to merge all the result_database together. This merged
+result_database would have duplicate query IDs which will not work.
+
+To get around this problem with create_scripts.py, it is possible to
+pass in a --start_with_test_number option which will start numbering
+the tests at this value.
+
+For the modification tests, since we are only running on one database
+size, the issue can be ignored. 
+---------------------------------------------------------------------
+
+
+Latency, performance and smoke tests
+====================================
+
+How To Generate Test Scripts
+----------------------------
+
+The create_scripts.py script will generate a set of testcases for each
+database and for each performer. It takes a list of databases and a
+list of performers.
+
+It also requires a timings csv file which has estimates for how long
+specific queries will take based on the performer and the database
+size. There is one provided in this directory called:
+   performer_timing_data.csv
+
+The following command will show the options required:
+   python create_scripts.py --help
+
+This will NOT modify the result database passed in, it just reads the
+full_queries table to get the queries to test. 
+
+
+What is Generated
+-----------------
+
+It will generate a directory tree of testcases under the --output_dir
+directory specified.  It will create a directory for each performer
+specified. Inside the performer directory, it will have a queries
+directory which contains the query files and a set of test scripts for
+the performer. There will be latency, throughput, performance and
+smoketest tests scripts. All test scripts and query files are
+generated with helpful names that contain the database size and query
+type and so forth.
+
+Latency & Throughput Tests
+--------------------------
+
+It will generate a latency and throughput test for each query
+subcategory. It will do this for both SELECT * and SELECT ID. It will
+generate query files for each query that was run against the
+baseline. 
+
+The query latency files will be broken up so that no single query file
+will run longer than a maximum time specified. This maximum time is an
+argument to the script --max_time_in_minutes and defaults to 30.  It
+estimates the time a query will take using the timing csv specified
+with the --timings_file command-line option.
+
+Throughput query files will have one file for each query subcategory
+which will contain all the queries (as opposed to splitting them into
+maximum-time sized files) so that the throughput tests will run for a
+longer time.
+
+
+Performance Tests
+-----------------
+
+It will generate a performance test for each query subcategory. The
+performance test will run a set of queries with a fixed delay between
+each query.
+
+The performance test script uses a performance query file which
+contains 10 queries from each of the lowest number of matching record
+bins. These bins are: 1-10, 11-100, and 101-1000. For example, the
+performance query file will contain 10 queries that return between
+1-10 records, 10 that return between 11-100 records, and 10 that
+return between 101-1000 records.
+
+The performance test will run each query with a fixed delay between
+them. For example, it will run the first query, then wait a fixed
+amount of time and run the second query, etc.
+
+The delay is an input to the script using the --delay_in_seconds
+command-line option where the default is 5 seconds.
+
+
+Smoketests
+----------
+
+The smoketest tests are used to quickly see if the test system is
+running properly. The smoketest will contain one of each type of query.
+
+It will generate a smoketest query file, which contains one query for
+each subcategory. The queries are chosen to return few records so they
+should be fast. There will be 2 of these query files per
+performer. One for SELECT * and one for SELECT id.
+
+A testcase using each smoketest query file will be generated to do
+latency tests for SELECT * and SELECT id.
+
+
+
+Modification tests
+========================================
+
+The create_modification_scripts.py script will generate modification
+tests for each database. Modification tests include tests to insert
+and delete rows, and tests to update rows. 
+
+The goal is to not permanently change the actual database so the
+modification tests are done by adding new rows and updating the new
+rows. At the end of the tests, the new rows are deleted leaving the
+database in the original format. The modificaion test will not modify
+existing rows in the original database.
+
+Inputs
+------
+
+The command-line arguments for the create_modification_scripts.py
+script are more complicated than for the create_scripts.py script
+because of the need to generate new rows.
+
+In addition to the output directory, the script takes:
+--result_databases (WILL BE MODIFIED!)
+--line_raw_files
+--schema_files
+--max_db_row_id
+
+These first 3 arguments must be specified for each database size you plan to
+test. if you are generating tests for 6 different sized databases then
+you must specify 6 result_databases, 6 line_raw_files, and
+6 schema_files. The lists must be in the same order so that the first
+result_database goes with the first database, etc. The --max_db_row_id
+is the max of the largest row id in all of the databases. This is used
+to generate unique ids for the new inserted rows.
+
+The result_database is the database generated by data_generation with
+query_generation enabled. It will be WRITTEN to! The script will fill
+in some of the mod tables. 
+
+The line_raw_files are generated by the fill_ta1_db.sh script. They
+are new rows, made specifically for the corresponding database, that
+the modification test script uses.
+
+The schema_file is the schema_file that data_generation,
+query_generation, and the part of fill_ta1_db.sh used for this
+database.
+
+The create_modification_script.py uses the database to determine the
+largest row ID so it will not create a new row with a duplicate row
+ID. It uses the result_database to populate part of the modification
+tables for the tests it generates. It uses the line_raw_files to
+create new rows to add to the database for the insert tests. It uses
+the schema files to be able to determine which data in the line raw
+files correspond to which fields so that it can create queries. 
+
+
+What is generated
+-----------------
+It will generate a directory tree of testcases under the --output_dir
+directory specified.  It will create a directory for each database
+size for each test. The directory will contain a testscript.ts file
+which is the top level testscript for that test. The directory will
+also contain .q and .lr files which the testscript.ts file invokes.
+
+
+Insert & Delete Tests
+--------------------------
+
+The insert and delete tests create a new row to add to the
+database. Based on this row data it will create a query that will
+match the new row. the query is created randomly using high entropy
+fields because the goal of the modification tests is to prove that the
+insert and deletes work, not testing any performance speed. Therefore
+it used high entropy fields to ensure that only a few records are
+returned. 
+
+The testscript will run the query before the insert and after the
+insert. The expectation is that the number of records returned after
+the insert will be one more than it was before the insert. 
+
+The testscript next runs the query before the delete and after the
+delete. 
+
+At the end of the testscript run, the database will be back to its
+original state.
+
+
+Update Tests
+------------
+
+The update tests will modify some fields in a row and check to see
+that the row got modified correctly by issuing queryies before and
+after the change. 
+
+Three queries are used with update tests. One query which will match
+the row before the change. One query which will match the row after
+the change, and a third query which will match the row in both
+states. These queries use high entropy fields for the same reason that
+the insert and delete tests do.
+
+Update tests are combined with insert/delete tests because of the need
+to leave the database in its original state, and because of the desire
+to not modify an existing row.
+
+To test the update modification, the testscript runs an insert test,
+the update test, and then the delete test.
+
+The update part of the testscript will run the 3 queries, update the
+row, and then run the 3 queries again. 
+
+

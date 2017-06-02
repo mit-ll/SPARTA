@@ -1,0 +1,14 @@
+\subsection{Query Correctness}
+\label{sec:emp_dbs_correctness_query}
+
+The query correctness definitions given in the Test Plan state that 
+\emph{query precision} is the probability that a record matches the query given that it was returned, 
+and that \emph{query recall} is the probability that a record is returned given that it matches the query.
+Additionally, we provide the \emph{bcf}, or \emph{bad content fraction} (the probability that the content of a record was returned corrupted), 
+the \emph{nbr}, or \emph{number of bad rankings} (the number of P9 queries which were incorrectly ranked), 
+the \emph{count} (the total number of queries run), 
+and the \emph{num failed}, or \emph{number of failures} (the number of queries resulting in failed messages, which are not counted towards any of the other metrics) for each query type.
+
+The query correctness results in Table \ref{tab:query_corr} were observed during the tests performed on {{config.performerprototype}}.
+
+{{outp.query_correctness_table}}

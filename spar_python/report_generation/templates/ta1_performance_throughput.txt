@@ -1,0 +1,6 @@
+\subsection{Query Throughput}
+\label{sec:emp_dbs_performance_throughput}
+
+The following table provides a summary of the query throughput (defined as number of queries divided by total time) for each throughput test. In this table, `DBNR' refers to the number of records in the database, and `DBRS' refers to the record size. 
+
+{{ outp.query_throughput_table }}

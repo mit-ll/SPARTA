@@ -1,0 +1,18 @@
+################################################################################
+# Collectl:   V3.6.0-1  HiRes: 1  Options: -sD -i 3.7 -P -om2z --sep , --filename /home/mi24752/disk.log
+# Host:       sparllan05  DaemonOpts:
+# Distro:       Platform:
+# Date:       20130802-063218  Secs: 1375450338 TZ: -0700
+# SubSys:     D Options: m2z Interval: 3.7 NumCPUs: 8 [HYPER] NumBud: 0 Flags: i
+# Filters:    NfsFilt:  EnvFilt:
+# HZ:         100  Arch: x86_64-linux-gnu-thread-multi PageSize: 4096
+# Cpu:        GenuineIntel Speed(MHz): 3301.000 Cores: 4  Siblings: 8
+# Kernel:     3.2.0-29-generic  Memory: 16404896 kB  Swap: 7999484 kB
+# NumDisks:   1 DiskNames: sda
+# NumNets:    3 NetNames: lo: eth1: eth0:
+# SCSI:       DA:0:00:00:00
+################################################################################
+#Date,Time,[DSK:sda]Name,[DSK:sda]Reads,[DSK:sda]RMerge,[DSK:sda]RKBytes,[DSK:sda]Writes,[DSK:sda]WMerge,[DSK:sda]WKBytes,[DSK:sda]Request,[DSK:sda]QueLen,[DSK:sda]Wait,[DSK:sda]SvcTim,[DSK:sda]Util
+20130802,06:32:22.701,sda,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00
+20130802,06:32:26.401,sda,0.00,0.00,0.00,1.08,1.89,11.89,11.00,0.01,9.00,9.00,0.97
+20130802,06:32:30.101,sda,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00,0.00

@@ -1,0 +1,5 @@
+WaitScript 5
+PublishAndModifySubscriptionsScript set-0-sh-0-verify-publications EXPONENTIAL_DELAY 1000000 408037056 1000 set-0-sh-0-modifications
+PublishAndModifySubscriptionsScript set-1-sh-0-verify-publications EXPONENTIAL_DELAY 1000000 408037057 1000 set-1-sh-0-modifications
+PublishAndModifySubscriptionsScript set-2-sh-0-verify-publications EXPONENTIAL_DELAY 1000000 408037058 1000 set-2-sh-0-modifications
+PublishAndModifySubscriptionsScript set-3-sh-0-verify-publications EXPONENTIAL_DELAY 1000000 408037059 1000 set-3-sh-0-modifications

@@ -1,0 +1,16 @@
+\subsection{Encryption}
+\label{sec:emp_he_encryption}
+
+Encryption time and ciphertext size are both highly correlated with {{ config.var_numbatches }} and mildly correlated with {{ config.var_depth }}. The correlation in {{ config.var_numbatches }} is obvious and expected - the client prototype has to do more work as the number of inputs to be encrypted grows. Since the ciphertext is an encryption of the input under the public key, we also expect encryption to be somewhat dependent on the size of the public key. As we previously discovered, this complexity is a function of both {{ config.var_batchsize }} and {{ config.var_depth }}. Figure \ref{fig:encryptionlatency} presents the profile of encryption time as a function of {{ config.var_depth }} and {{ config.var_numbatches }}, the two parameters that showed the highest correlation with the data. 
+
+{{ outp.encryption_graph }}
+
+Our best-fit model of encryption time is
+$${{ outp.encryption_functionstr }}$$ 
+with an $r^2$ value of ${{ outp.encryption_rsquared }}$.
+
+Table \ref{tab:freshciphertextsizes} and Figure \ref{fig:freshciphertextsizes} provide descriptive statistics for fresh ciphertext sizes divided by {{ config.var_numbatches }}.
+
+{{ outp.ciphertextsize_table}}
+
+{{ outp.ciphertextsize_graph}}

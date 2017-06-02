@@ -1,0 +1,3 @@
+build/
+text_generator.c
+text_generator.so

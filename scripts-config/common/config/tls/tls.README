@@ -1,0 +1,47 @@
+The following is the process to setup TLS in the baseline:
+
+### Obtain certificates and keys.
+
+One option is to use the pre-generated certificates and keys (server-cert.pem, cacert.pem, server-key.key in scripts-config/common/config).  
+
+To generate new keys: 
+1. Obtain a version of openssl 1.0.1 or newer.
+If an earlier version is used, the generated certificates will be signed with sha1 instead of sha256.  Everything will work, but as the target configuration is Suite B, sha256 is preferred.
+2. openssl ecparam -out nist-p256.pem -name prime256v1
+This will generate the a P-256 parameter file.
+3. openssl req -x509 -nodes -days 3650 -newkey ec:nist-p256.pem -sha256 -keyout server-key.key -out server-cert.pem -config /etc/ssl/openssl.cnf
+This will generate a self-signed certificate for the server (server-cert.pem) and key (server-key.pem).
+4. cp server-cert.pem cacert.pem
+Because we are using self-signed certificates, the server certificate is also the 'ca' certificate.
+
+Now we have three files we need:
+The server certificate, server-cert.pem
+The server private key, server-key.key
+The ca certificate, cacert.pem
+
+The client does not need its own certificate and key, though it will need a copy of the ca certificate.
+
+
+### Configure the baseline server to use TLS:
+
+The default 'my.cnf' for MySQL/MariaDB, in the [mysqld] section has lines for 'ssl-ca', 'ssl-cert', and 'ssl-key' commented out.
+Uncomment these lines, and hae ssl-ca point to cacert.pem, ssl-cert point to server-cert.pem, and ssl-key point to server-key.key.
+
+
+### Configure the baseline client to use TLS:
+
+Copy cacert.pem to the client system.
+Add the following line to the [client] section of the client's my.cnf:
+ssl-ca=/your/path/to/cacert.pem
+
+### Verify that this has worked:
+
+Login to the server system from the clienet system in the normal manner.
+Once connected, do:
+SHOW STATUS LIKE 'Ssl_cipher';
+and verify the result is non-empty/non-null.
+
+
+
+
+

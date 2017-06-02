@@ -1,0 +1,4 @@
+#comment line
+172.16.0.135 = client
+172.16.0.2 = server
+172.25.8.10 = thirdparty

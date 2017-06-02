@@ -1,0 +1,15 @@
+# NOTE: Do NOT simply overwrite this file with 'pip freeze > requirements.txt'.
+# We would like to preserve the comments and organization of this file.
+
+# Due to the packaging of some Python modules (e.g., matplotlib and scipy),
+# including packages in a requirements file along with their dependency packages
+# can be problematic. pip will download all installation files and execute each
+# package's setup.py file before actually installing any packages; therefore, if
+# a setup.py has some initial requirements (e.g., numpy being present for
+# matplotlib and scipy), those checks may fail and abort the entire requirements
+# file installation.
+#
+# The easiest workaround is to first install common dependencies via this
+# initial requirements file, and then install the rest of the packages in a
+# different requirements file.
+numpy==1.7.1

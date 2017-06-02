@@ -1,0 +1,62 @@
+{% extends "ta1_overview_common_subcat.txt" %}
+
+{% block latencycontent %}
+
+{% if outp.id_graph or outp.star_graph %}
+
+Fixing $m = {{ config.fixed_m }}$ and $n = {{ config.fixed_n }}$, the following graphs describe equality {{ outp.query_name.lower() }} \texttt{select id} and \texttt{select *} query latency as a function of the number of records returned and the sum of the number of records matching the first $n - m + 1 = {{ config.fixed_n - config.fixed_m + 1 }}$ clauses:
+
+{% if outp.id_graph %}
+
+{{ outp.id_graph }}
+
+{% if outp.id_functionstr %}
+
+{% block idgraphdescription %}
+The following curve describes the latency (`{{ config.var_ql }}') of \texttt{select id} equality {{ outp.query_name.lower() }} queries as a function of the number of matching records (`{{ config.var_nummatches }}') and the sum of the number of records matching the first $n - m + 1 = {{ config.fixed_n - config.fixed_m + 1 }}$ clauses (`{{ config.var_sumfirstmatches }}') with $r^2$ value ${{ outp.id_rsquared }}$:
+
+$${{ outp.id_functionstr }}$$
+{% endblock %}
+
+{% endif %}
+
+{% endif %}
+
+{% if outp.star_graph %}
+
+{{ outp.star_graph }}
+
+{% if outp.star_functionstr %}
+
+{% block stargraphdescription %}
+The following curve describes the latency (`{{ config.var_ql }}') of \texttt{select *} equality {{ outp.query_name.lower() }} queries as a function of the number of matching records (`{{ config.var_nummatches }}') and the sum of the number of records matching the first $n  - m + 1 = {{ config.fixed_n - config.fixed_m + 1 }}$ clauses (`{{ config.var_sumfirstmatches }}') with $r^2$ value ${{ outp.star_rsquared }}$:
+
+$${{ outp.star_functionstr }}$$
+
+{% endblock %}
+
+{% endif %}
+
+{% endif %}
+
+{% endif %}
+
+{% if outp.id_chart or outp.star_chart %} 
+
+The following charts describe the mean query latencies for \texttt{select id} and \texttt{select * } {{ outp.query_name.lower() }} queries returningbetween {{ config.threshold_numrecords_min }} and {{ config.threshold_numrecords_max }} records as the values of $m$ and $n$ were varied:
+
+{% if outp.id_chart %}
+
+{{ outp.id_chart }}
+
+{% endif %}
+
+{% if outp.star_chart %}
+ 
+{{ outp.star_chart }}
+
+{% endif %}
+
+{% endif %}
+
+{% endblock %}

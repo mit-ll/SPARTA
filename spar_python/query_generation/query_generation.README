@@ -1,0 +1,399 @@
+===============================================================================
+
+OVERVIEW
+--------
+
+Query generation is an extension of data-generation; allowing queries to be
+generated and ground truth gathered during the initial database creation. Query
+generation pulls from the same demographic information from the United States 
+Census Bureau and other sources that data generation uses to create individual
+rows within the database. Using the distribution objects, it selects values 
+based on the desired resulting record set sizes indicated in the query_schema
+file. With these values it builds queries, for which ground truth is created 
+by running map-reduce aggregators over the rows as they are generated. 
+
+As with data generation, query generation relies on the same random seed 
+which allows for reproducibility of queries. The setup for the environment is 
+identical to that of data_generation. In fact, to execute a run of query
+generation, it is controlled by additional command line flag options on a
+data generation run. 
+
+In this initial release, queries that are being generated only roughly 
+correspond to the requested number of records returned. That being said, be 
+aware that some queries may inadvertently return large sections of the database
+(especially queries over the notes fields). Thus it is worth looking at the 
+queries after they are generated before running them on the databases to sanity 
+check. 
+
+Please refer to the data_generation document for more detailed instructions
+for pure data generation. Note that as with all executables, data_generation 
+(and with extension query_generation) support the --help flag. Also feel free 
+to call or ask for help for any aspect regarding query generation.
+
+
+===============================================================================
+
+COMMAND LINE ARGUMENTS
+----------------------
+
+Query-specific options for spar_python/new_query_generation/pre_test_generation
+
+--generate-queries  
+	
+	Toggle switch to generate queries on this run of data generation. 
+	Defaults to false. This flag must be present if any of the other query 
+	specific flags are used. 
+    
+                    
+--query-schema-file=Q_SCHEMA_FILE
+    
+    Path to the schema file for queries, this is used to determine which 
+    queries need to be generated. Expanded instructions for the query schema
+    file are included below. This file should be in .csv format. 
+    
+    
+--result-database-file=RESULT_DATABASE_FILE
+    
+    Path to the file where the ground truth database will be written to. This 
+    generated file is in MySQL format and is used in the generation of the 
+    final pdf report. After query generation is run, the following fields
+    in the results/ground truth database are populated:
+    	* Atomic: aqid, category, sub_catagory, db_num_records, db_record_size,
+    	  where_clause, num_matching_records, field, field_type, keyword_len
+    	  range
+    	* Full: qid, category, sub_category, db_num_records, db_record_size,
+    	  where_clause, num_matching_records, matching_record, ids, 
+    	  matching_record_hashes
+    	* Full to atomic: atomic_row_id, full_row_id
+    
+    
+--list-of-queries-file=LIST_OF_QUERIES_FILE
+    
+    Path to the file which will be generated containing the list of queries 
+    generated. They will be in the format ingestible by the test harness:
+       
+       (qid) SELECT * FROM main WHERE (where_clause)
+        
+	Should you wish to do 'id' rather than '*' queries, on line 99 in pre-test-
+	generation can be changed from '*' to 'id'.
+
+--check-rss-results
+
+    Used to verify the queries generated. Will write the rss counts for all
+    queries to a file called query_rss_counts.txt. This is primarily useful
+    for debugging new query_generation functionality. It also shows
+    how many records the query actually matched, which is useful to
+    screen the queries generated in this initial release.
+
+
+Before each new run of data/query generation, the files indicated by
+Q_SCHEMA_FILE and RESULT_DATABASE_FILE must not previously exist. 
+
+What it looks like on the command line within spar_python/new_query_generation
+
+ $ python pre_test_generation.py -d /path/to/data/directory
+    --line-raw-file=/path/to/desired/file
+    --schema-file=<toplevel>scripts-config/ta1/config/metadata_schema.csv
+    --num-rows=10000 --generate-queries --query-schema=<QUERY_SCHEMA_FILE> 
+    --result-database-file=results_database.sql --list-of-queries=queries.txt 
+
+===============================================================================
+
+QUERY SCHEMA FOR SUPPORTED QUERY TYPES
+--------------------------------------
+
+Included in the code drop is several example query_schema files for each type 
+of supported query. The basic structure for the schema is
+
+	*
+	cat,sub_cat,fields,"['no_queries','r_lower','r_upper']",
+ 	EQ,eq,"['fname','lname']","[10,1,10]","[5,11,100]"
+ 	...(more queries)
+
+The * indicates that the next row is a redefinition of the fields needed for 
+that particular query type (outlined below for each particular query type). The
+only thing that will ever change is what is contained in the other_columns list
+when the fields are redefined.
+
+The next line is the fields for the next n lines (until another * is hit or the 
+end of the file is reached). It is important to have no blank lines in the 
+schema.
+
+Each subsequent n lines represents a set of queries. The cat columns, current 
+valid values are:
+
+	*EQ, P2, P3, P4, P6, and P7  
+
+Sub_cat valid fields are outlined within the specific categories below. Valid 
+fields generally are (but are restricted below for different categories):
+
+	*'fname'				*'citizenship'
+	*'lname'				*'income'
+	*'ssn'					*'military_service'
+	*'zip'					*'language'
+	*'city'					*'hours_worked_per_week'
+	*'address'				*'weeks_worked_per_year'
+	*'state'				*'foo'
+	*'sex'					*'last_updated'
+	*'age'					*'notes1'
+	*'race'					*'notes2'
+	*'marital_status'		*'notes3'
+	*'school_enrolled'	   	*'notes4
+	*'education'	     	*'dob'
+
+There can be as many fields as are supported within the list of fields
+(as shown above with the listing of 'fname' and 'lname', realistically one 
+could also include in that list 'ssn', 'foo', 'address', etc.). The next m
+columns over represent different combinations of the other_columns values. 
+
+In this example 'no_queries', 'r_lower', and 'r_upper'. There will be a total
+of 15 queries generated, 10 of which return between 1 and 10 records and 5
+that will return between 11 and 100 records. One could extend the columns 
+further and have [5,101,1000] which would generate 5 additional queries that
+returned between 101 and 1000 records. 
+
+It is important to not generate fewer lines in the database than the largest
+result set size. In the situation above, the smallest number of rows that 
+could be generated without causing generation to crash is 1000 records. 
+
+It tends to be easiest to create schema files within an editor like excel
+rather than a simple text editor. The process of learning the distributions,
+generating queries, and generating data will not happen unless provided a 
+correctly formatted query_schema file. However this does not check for the
+content of the file, just the formatting, so it is still possible to provide
+an incorrect query schema file. 
+
+Another note on the number of queries generated, though one may specify 10
+equality queries, 10 equality queries may not be output as the program 
+eliminates repeat queries. Thus it is worth choosing a slightly higher value
+than desired. 
+
+The details of the schema for each of the supported types are below:
+
+
+*EQ:
+	Example query:
+	
+		43 SELECT * FROM main WHERE fname = 'LISA'
+		
+	Example of a csv file:
+		*,,,,,,,,
+		cat,sub_cat,fields,"['no_queries','r_lower','r_upper']",
+		EQ,eq,"['fname','lname']","[10,1,10]","[5,11,100]","[5,101,1000]",
+	
+	Other_columns: (order must be maintained)
+		*'no_queries' - the number of queries that return the specified result
+		  set sizes
+		*'r_lower' - the lower end of the range of result set size one is 
+		  interested in (number of records returned by that query)
+		*'r_upper' - the upper end of the range of result set size
+	
+	Valid sub_cats:
+		*'eq'
+		
+	Valid fields:
+		*'fname'		*'city'
+		*'lname'		*'zip'
+		*'ssn'			*'income'
+		*'address'  	*'foo'
+	
+	Note on Future Development:
+		Queries generated over ssn, address, and income fields, are not likely
+	to return any results when tested on the smaller database sizes. These are
+	fields with a large number of possible values and currently query generation
+	is not optimized over these fields. In the future, along with additional 
+	refinement, these fields will be better supported. The best functionality 
+	is over fields fname, lname, and city.  
+	
+*P2 (field 'foo' specific, do not support other fields currently):
+	
+	Example queries:
+	
+		150 SELECT * FROM main WHERE foo BETWEEN 74 AND 184
+		312 SELECT * FROM main WHERE foo >= 4207324304514021946
+
+	Example of a csv file:
+		*,,,,,,,,
+		cat,sub_cat,fields,"['no_queries','r_lower','r_upper','r_exp_lower','r_exp_upper','type']",,,,,
+		P2,foo-range,['foo'],"[1,1,10,2,50,'range']","[1,11,100,2,50,'range']",,,,
+		P2,foo-greater,['foo'],"[1,1,10,2,50,'greater-than']","[1,11,100,2,50,'greater-than']",,,,
+	
+	Other_columns: (order must be maintained)
+		
+		*'no_queries' - the number of queries that return the specified result
+		  set sizes for each value with that specified range. This is best 
+		  illustrated through an example. Take the set no_queries = 1, 
+		  r_exp_lower = 2, and r_exp_upper = 10. This would generate 1 query
+		  for every range exponent in the range 2 to 10 (for a total of 9). 
+		  Each of which would return generally the same number of records.
+		     
+		*'r_lower' - the lower end of the range of result set size one is 
+		  interested in (number of records returned by that query)
+		  
+		*'r_upper' - the upper end of the range of result set size
+		
+		*'r_exp_lower' - The lower exponent for the range value. This indicates
+		  the bit length of the range generated. For greater-than types of queries,
+		  this is ignored beyond the effects on the aforementioned number of 
+		  queries generated. 
+		
+		*'r_exp_lower' - The lower exponent for the range value. This indicates
+		  the bit length of the range generated. For greater-than types of queries,
+		  this is ignored beyond the effects on the aforementioned number of 
+		  queries generated. 
+		
+		*'type' - These correspond to the sub_categories listed below
+		    ~'range' - Corresponds to foo-range, indicates a two-side range
+		      query
+		    ~'greater-than' - Corresponds to foo-greater, indicates a single
+		      sided greater than query. 
+	
+	Valid sub_cats:
+		*'foo-range' - two-sided range query
+		*'foo-greater' - single sided greater than query
+		
+	Valid fields:
+		*'foo'
+	
+	Note on Future Development:
+		Though a certain amount of queries may be specified to be generated,
+	this a maximum value of possible queries. If it is impossible to generate
+	a query for a given number of rows and range size, that query will not be
+	created. Additionally, future development will support queries over fields
+	other than foo. 
+	
+*P3/P4:
+
+	Example queries:
+	
+		372 SELECT * FROM main WHERE CONTAINED_IN(notes4, 'characterized')
+		377 SELECT * FROM main WHERE CONTAINS_STEM(notes4, 'watching')
+		
+	Example of a csv file:
+		*,,,,,,,,
+		cat,sub_cat,fields,"['no_queries','r_lower','r_upper','keyword_len','type']",,,,,
+		P3,word,['notes4'],"[5,11,100,10,'word']","[5,101,1000,10,'word']",,,,
+		P4,stem,['notes4'],"[5,11,100,10,'stem']","[5,101,1000,10,'stem']",,,,
+	
+	Other_columns: (order must be maintained)
+		*'no_queries' - the number of queries that return the specified result
+		  set sizes
+		*'r_lower' - the lower end of the range of result set size one is 
+		  interested in (number of records returned by that query)
+		*'r_upper' - the upper end of the range of result set size
+		*'keyword_len' - the length of keyword to be searched for (for example
+		  'apple' would have a keyword_len of 5)
+		*'type' - Corresponds to the sub_categories listed below, indicates
+			which type of query to be generated
+			~'word' - Corresponds to word
+			~'stem' - Corresponds to stem
+	
+	Valid sub_cats:
+		*'word' - Indicates P3 queries
+		*'stem' - Indicates P4 queries
+		
+	Valid fields:
+		*'notes1'		*'notes3'
+		*'notes2'		*'notes4' 
+	
+	Note on Future Development:
+		Future development for P3/P4 will further refine what queries are 
+	generated based on how well they actually return the requested number
+	of records. At the moment, the number of actual records return is not
+	closely fitted to the number of requested records.
+	
+*P6:
+
+	Example queries:
+	
+		15 SELECT * FROM main WHERE fname LIKE '_ACQUELINE'
+		17 SELECT * FROM main WHERE fname LIKE 'JACQUEL_NE'
+		24 SELECT * FROM main WHERE fname LIKE 'JACQUELIN_'
+		
+	Example of a csv file:
+		*,,,,,,,,
+		cat,sub_cat,fields,"['no_queries','r_lower','r_upper','keyword_len','type']",,,,,
+		P6,wildcard,"['fname','lname','address']","[2,1,10,10,'initial-one']","[2,11,100,10,'initial-one']",,,,
+		P6,wildcard,"['fname','lname','address']","[2,1,10,10,'middle-one']","[2,11,100,10,'middle-one']",,,,
+		P6,wildcard,"['fname','lname','address']","[2,1,10,10,'final-one']","[2,11,100,10,'final-one']",,,,
+	
+	Other_columns: (order must be maintained)
+		*'no_queries' - the number of queries that return the specified result
+		  set sizes
+		*'r_lower' - the lower end of the range of result set size one is 
+		  interested in (number of records returned by that query)
+		*'r_upper' - the upper end of the range of result set size
+		*'keyword_len' - the length of keyword to be searched for (for example
+		  'app%' would have a keyword_len of 4). It includes any wildcard 
+		  characters
+		*'type' - Indicates which type of query to be generated, corresponds 
+		  with the sub_catagories listed in the query test plan
+			~'initial-one' - replaces one character with _ at beginning of word
+			~'middle-one' - replaces one character with _ in middle of word
+			~'final-one' - replaces one character with _ at end of word
+	
+	Valid sub_cats:
+		*'wildcard'
+		
+	Valid fields:
+		*'fname'
+		*'lname'
+		*'address'
+	
+	Note on Future Development:
+		Future development for P6 will further refine what queries are 
+	generated based on how well they actually return the requested number
+	of records. At the moment, the number of actual records return is not
+	closely fitted to the number of requested records. 
+		
+*P7:
+
+	Example queries:
+	
+		31 SELECT * FROM main WHERE address LIKE '%81 Curve Ln'
+		34 SELECT * FROM main WHERE address LIKE '% Vinyard%'
+		41 SELECT * FROM main WHERE address LIKE '62 Alfred C%'
+	
+	Example of a csv file:
+		*,,,,,,,,
+		cat,sub_cat,fields,"['no_queries','r_lower','r_upper','keyword_len','type']",,,,,
+		P7,wildcard,"['fname','lname','address']","[2,1,10,10,'initial']","[2,11,100,10,'initial']",,,,
+		P7,wildcard,"['fname','lname','address']","[2,1,10,10,'both']","[2,11,100,10,'both']",,,,
+		P7,wildcard,"['fname','lname','address']","[2,1,10,10,'final']","[2,11,100,10,'final']",,,,
+	
+	Other_columns: (order must be maintained)
+		*'no_queries' - the number of queries that return the specified result
+		  set sizes
+		*'r_lower' - the lower end of the range of result set size one is 
+		  interested in (number of records returned by that query)
+		*'r_upper' - the upper end of the range of result set size
+		*'keyword_len' - the length of keyword to be searched for (for example
+		  'app%' would have a keyword_len of 4). It includes any wildcard 
+		  characters
+		*'type' - Indicates which type of query to be generated, corresponds 
+		  with the sub_categories listed in the query test plan
+			~'initial' - Queries of the form %stuff
+			~'both' - Queries of the form %stuff%
+			~'final' - Queries of the form stuff%
+	
+	Valid sub_cats:
+		*'wildcard'
+		
+	Valid fields:
+		*'fname'      *'notes1'      *'notes4'
+		*'lname'      *'notes2'
+		*'address'    *'notes3'
+	
+	Note on Future Development:
+		Future development for P7 will further refine what queries are generated
+	based on how well they actually return the requested number of records. At
+	the moment, the number of actual records return is not closely fitted to the
+	number of requested records. In addition, support for P7-other will be 
+	implemented. 
+	 
+		
+	
+	
+
+	
+	

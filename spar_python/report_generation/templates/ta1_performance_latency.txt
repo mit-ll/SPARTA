@@ -1,0 +1,6 @@
+\subsection{Query Latencies}
+\label{sec:emp_dbs_performance_latency}
+
+The following table provides a summary of the best-fit curves for the query latency as a function of number of records returned for each database size and query type. The curves are not always good fits, since other factors (such as range size for P2 queries, etc.) might come into play. In this table, `DBNR' refers to the number of records in the database, and `DBRS' refers to the record size.
+
+{{ outp.query_latency_table }}

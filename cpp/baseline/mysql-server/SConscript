@@ -1,0 +1,65 @@
+Import('builder')
+
+builder.Library('bind-manager', 'bind-manager.cc',
+        libs = ['@knot', 'mariadbclient'])
+
+builder.Library('server-util', 'util.cc',
+        libs = ['@logging'])
+
+builder.Library('parse-stem-insert', 
+        ['notes-parser.cc', 'index-table-insert-builder.cc',],
+        libs = ['@stemmer', '@logging', '@knot'])
+
+builder.Library('alarm-words', 
+        ['alarm-words.cc'],
+        libs = ['@knot'])
+builder.AddBoostTest('alarm-words_test.cc',
+        libs = ['@alarm-words'])
+		
+builder.AddBoostTest('notes-parser_test.cc',
+        libs = ['@parse-stem-insert'])
+builder.AddBoostTest('index-table-insert-builder_test.cc',
+        libs = ['@parse-stem-insert', '@logging'])
+
+builder.Library('data-inserter', 'data-inserter.cc',
+        libs = ['@schema', '@line-raw-data', '@bind-manager',
+                '@alarm-words', '@parse-stem-insert'])
+
+# TODO: move row-hash-aggregator to common
+builder.Library('row-hash-aggregator', '../../../test-harness/ta1/row-hash-aggregator.cc',
+        libs = ['libcrypto', '@knot'])
+builder.Program('mysql-directory-importer', 'directory-importer.cc', 
+        libs = ['@data-inserter', '@event-loop', '@line-raw-parser',
+            'boost_program_options', '@mysql-connection', '@row-hash-aggregator', 
+            '@server-util', 'sqlite3'])
+builder.env.Install('$INSTALL_DIRECTORY', 'mysql-directory-importer')
+
+builder.Library('server-command-handlers',
+        ['insert-handler.cc', 'update-handler.cc', 'delete-handler.cc',
+         'verify-handler.cc'],
+        libs = ['@common-baseline-protocols', '@mysql-connection',
+            '#boost_thread', '@schema', '@parse-stem-insert',
+            '@string-algo'])
+
+builder.AddBoostTest('update-handler_test.cc',
+        libs = ['@server-command-handlers', '@logging'])
+
+builder.Program('ta1-baseline-server', 'server-main.cc',
+        libs = ['@output-handler', '@server-command-handlers',
+            '@mysql-connection', '@statics', 'boost_program_options',
+            '@schema', '@server-util', '@data-inserter'])
+builder.env.Install('$INSTALL_DIRECTORY', 'ta1-baseline-server')
+
+# Builds the user-defined function to support M_OF_N. See m_of_n.sql for
+# instructions on installing this in MySQL. Note that builder.SharedObject and
+# builder.SharedLibrary rules might work too and might be cleaner.
+#
+# Most of the flags passed to g++ come from running "mysql_config --cflags" and
+# "mysq_config --libs". If this build rule stops working due to newer versions
+# of MySQL or something those commands will probably indicate how to fix things.
+builder.Command('m_of_n.so', 'm_of_n.cc',
+        'g++ -I/usr/include/mysql -DBIG_JOINS=1  -fno-strict-aliasing '
+        '-O2 -fPIC -pthread -shared '
+        '-L/usr/lib/x86_64-linux-gnu -lmariadbclient -lpthread -lz -lm -lrt -ldl '
+        '-o $TARGET $SOURCE ')
+builder.env.Install('$INSTALL_DIRECTORY', 'm_of_n.so')

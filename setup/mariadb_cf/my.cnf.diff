@@ -1,0 +1,20 @@
+47c47,50
+< bind-address		= 127.0.0.1
+---
+> #bind-address		= 127.0.0.1
+> # For SPARTA, we set this to listen on all interfaces.
+> bind-address		= 0.0.0.0
+> 
+73a77,78
+> # For SPARTA, we explicitly disable logging for performance reasons.
+> general_log             = 0
+81a87,88
+> # For SPARTA, we explicitly disable slow query logging for performance reasons.
+> slow_query_log=0
+89,90c96,98
+< expire_logs_days	= 10
+< max_binlog_size         = 100M
+---
+> # For SPARTA, we explicitly comment out anything related to binary logging for performance and disk space reasons.
+> #expire_logs_days	= 10
+> #max_binlog_size         = 100M

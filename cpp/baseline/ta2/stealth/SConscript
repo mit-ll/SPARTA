@@ -1,0 +1,41 @@
+import SCons.Script as scons
+Import('builder')
+
+flex_outputs = builder.Flex('stealth-scanner.l')
+lemon_outputs = builder.Lemon('stealth-parser.y')
+
+builder.Library('stealth-circuit-gates', ['and.cc', 'or.cc', 'xor.cc', 
+        'multi-input-gate.cc'], libs = ['@logging'])
+
+builder.Library('stealth-circuit', ['circuit.cc'],
+        libs = ['@stealth-circuit-gates', '@string-algo'])
+
+stealth_parser_lib = builder.Library('stealth-scanner',
+        lemon_outputs + flex_outputs, 
+        libs = ['@stealth-circuit-gates', '@logging'],
+        CCFLAGS = builder.env['CCFLAGS'] + ' -Wno-unused-variable ' +
+        '-Wno-unused-function')
+# Scons doesn't normally check it's sources list for dependancies so this needs
+# to be done manually.
+scons.Depends(stealth_parser_lib, lemon_outputs)
+scons.Depends(stealth_parser_lib, flex_outputs)
+
+builder.Library('stealth-circuit-parser', ['stealth-circuit-parser.cc'], 
+        libs = ['@stealth-circuit-gates', '@stealth-scanner', 
+        '@stealth-circuit']);
+
+builder.Library('stealth-baseline', 'stealth-baseline.cc',
+        libs = ['@stealth-circuit-parser','@baseline'])
+
+builder.Program('ta2-stealth-baseline-server', 'stealth-baseline-main.cc',
+        libs = ['@stealth-baseline'])
+builder.env.Install('$INSTALL_DIRECTORY', 'ta2-stealth-baseline-server')
+
+builder.AddBoostTest('stealth-gate_test.cc', libs = ['@stealth-circuit-gates'])
+
+builder.AddBoostTest('stealth-parser_test.cc', 
+        libs = ['@stealth-scanner', '@logging'])
+
+builder.AddBoostTest('stealth-circuit-parser_test.cc',
+        libs =[ '@stealth-circuit-parser'])
+

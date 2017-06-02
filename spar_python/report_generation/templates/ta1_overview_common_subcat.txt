@@ -1,0 +1,7 @@
+\subsubsection{
+{{ outp.query_cat }}-{{ outp.query_subcat }}
+({{ outp.query_name }})
+}
+
+{% block latencycontent %}
+{% endblock %}

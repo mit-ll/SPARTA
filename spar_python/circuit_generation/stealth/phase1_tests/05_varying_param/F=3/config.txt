@@ -1,0 +1,13 @@
+seed = 61637825
+K = 'default'
+test_type = RANDOM
+num_circuits = 2
+num_inputs = 5
+fam = 3
+D = 6
+W = 10
+generate = True
+W = 100
+generate = True
+W = 200
+generate = True

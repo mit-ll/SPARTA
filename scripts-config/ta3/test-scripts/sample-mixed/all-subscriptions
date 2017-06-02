@@ -1,0 +1,5 @@
+0 0 ((military_service = 'Under_17') AND (weeks_worked_last_year = 49) AND (zip = '62392')) OR (income = 202339) OR ((state = 'Arkansas') AND (race = 'Alaska_Native') AND (military_service = 'Under_17') AND (citizenship = 'Yes_Naturalized') AND (weeks_worked_last_year = 49)) OR ((ssn = '695927249') AND (hours_worked_per_week = 28)) OR ((state = 'Arkansas') AND (military_service = 'Under_17') AND (ssn = '695927249'))
+1 0 language = 'MALAY'
+2 0 lname = 'ZAVALA'
+3 0 fname = 'JEANNA'
+4 0 (race = 'Alaska_Native') AND (dob = '1929-05-03')

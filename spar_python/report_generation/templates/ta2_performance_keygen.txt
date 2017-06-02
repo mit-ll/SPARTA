@@ -1,0 +1,13 @@
+\subsection{Key Generation}
+\label{sec:emp_he_keygen}
+We found that key generation time and key size were highly correlated with the circuit depth ${{ config.var_depth }}$ and batch width ${{ config.var_batchsize }}$, slightly correlated with the number of inputs ${{ config.var_numbatches }}$, but not correlated with the security parameter ${{ config.var_secparam }}$. While the lack of dependency on ${{ config.var_secparam }}$ might seem troubling at first, we recognize that the combinations of ${{ config.var_depth }}$, ${{ config.var_batchsize }}$, ${{ config.var_numbatches }}$, and ${{ config.var_secparam }}$ were selected jointly, and thus the existence of a relationship may have been masked. In addition, any observed relationships could be an artifact of the parameter selection process. Based on our observations, the choice of security parameter (${{ config.var_secparam }} = 80$, ${{ config.var_secparam }} = 128$) did not significantly impact the data. We will avoid discussing ${{ config.var_secparam }}$ as an independent variable in future analyses.In Figure \ref{fig:keygenlatency}, we present a profile of key generation time varying as a function of circuit depth ${{ config.var_depth }}$ and batch width ${{ config.var_batchsize }}$. In the ranges that we tested, both generation time and key size are linear in ${{ config.var_batchsize }}$ and quadratic in ${{ config.var_depth }}$. Our best-fit model of key generation time is
+
+$${{ outp.keygen_functionstr }}$$
+
+with an $r^2$ value ${{ outp.keygen_rsquared }}$.
+
+{{ outp.keygen_graph }}
+
+Table \ref{tab:keysizes} provides descriptive statistics for generated key size.
+
+{{ outp.keysize_table}}

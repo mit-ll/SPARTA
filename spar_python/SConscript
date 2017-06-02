@@ -1,0 +1,67 @@
+import subprocess
+import os.path
+import fnmatch
+
+Import('common')
+
+env = common.env
+
+SConscript('common/distributions/SConscript', exports = 'common')
+
+#
+# Install top level scripts
+#
+# Note that the python file that is being installed needs to be able
+# to run from both the directory it lives in and the directory it is
+# installed in. If the python file needs to import other files from
+# our scons repostitory then you need to modify the code that changes
+# the system path before trying to import the files. The current code
+# calculates base_dir and appends that to sys.path. It calculates
+# base_dir based on this_dir which uses os.path.abspath. 
+#
+# For example:
+# this_dir = os.path.dirname(os.path.abspath(__file__))
+# base_dir = os.path.join(this_dir, '..', '..')
+# sys.path.append(base_dir)
+#
+# For any scripts that you install, you need to change the value of
+# this_dir to use realpath instead of abspath because realpath also
+# expands symbolic links so the path will point to the actual
+# file. When a script is run from the install directory, realpath will
+# convert it to the actual path where the script lives. Appending
+# base_dir to sys.path allows the imports to work properly.
+#
+# For example: 
+# change:
+#   this_dir = os.path.dirname(os.path.abspath(__file__))
+# to:
+#   this_dir = os.path.dirname(os.path.realpath(__file__))
+#
+env.LinkInstall('$INSTALL_DIRECTORY', 'query_generation/fill_matching_record_hashes.py')
+env.LinkInstall('$INSTALL_DIRECTORY', 'query_generation/pre_test_generation.py')
+env.LinkInstall('$INSTALL_DIRECTORY', 'analytics/ta1/parse_client_harness_log.py')
+env.LinkInstall('$INSTALL_DIRECTORY', 'analytics/ta1/parse_server_harness_log.py')
+env.LinkInstall('$INSTALL_DIRECTORY', 'remote_runner/remote_runner.py')
+env.LinkInstall('$INSTALL_DIRECTORY', 'test_generation/create_scripts.py')
+env.LinkInstall('$INSTALL_DIRECTORY', 'test_generation/create_modification_scripts.py')
+env.LinkInstall('$INSTALL_DIRECTORY', 'sql_generation/sql_generator.py')
+
+def RunPythonTest(test, log_file):
+    command = 'nosetests -v --with-xunit '
+
+    ret = subprocess.call(command, stdout=log_file, stderr=subprocess.STDOUT,
+            shell=True)
+    return ret
+
+python_test_builder = common.GenericTestBuilder(
+    'py_test', 'PythonTest', RunPythonTest)
+
+def find_all_files(directory, pattern):
+    for root, dirs, files in os.walk(directory):
+        for basename in files:
+            if fnmatch.fnmatch(basename, pattern):
+                yield os.path.join(root, basename)
+
+test_files = [x for x in find_all_files('.', '*_test.py')]
+
+env.PythonTest('run_', "nosetests", None)

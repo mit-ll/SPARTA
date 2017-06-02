@@ -1,0 +1,10 @@
+Import('builder')
+
+# The porter library generates a ton of compile warnings and errors if compiled
+# with our default environment so we compile to a .o file here explicitly,
+# turning off warnings and such, and then link it into a library. Note we also
+# force it to use g++ instead of gcc (scons used gcc on .c files by default)
+# since gcc generates lots of compile errors but g++ doesn't.
+porter_env = builder.env.Clone(CCFLAGS = '-O3', CC = 'g++')
+porter_obj = porter_env.Object('stemmer.c')
+builder.Library('porter-stemmer', [porter_obj,])

@@ -1,0 +1,7 @@
+# Turns off 'flashing' alarm bell behavior in terminal windows
+vbell off
+# Next few lines will force the screen window's title to appear at the bottom of
+# each terminal
+hardstatus on
+hardstatus alwayslastline
+hardstatus string "%t"

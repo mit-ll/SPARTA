@@ -1,0 +1,6 @@
+KEY
+phase1_tests/07_one_of_each_very_large/key/1
+CIRCUIT
+phase1_tests/07_one_of_each_very_large/circuit/1
+INPUT
+phase1_tests/07_one_of_each_very_large/input/1

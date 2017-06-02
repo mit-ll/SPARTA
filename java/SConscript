@@ -1,0 +1,79 @@
+import subprocess
+import tempfile
+import sys
+
+# TODO(njhwang) make it such that SCons doesn't build every single time if it
+# isn't necessary
+
+Import('common')
+
+env = common.env
+
+# Function that is run by UnitTestRunner when a unit test is executed
+def RunJavaTest(test, log_file, classpath):
+    command_str = 'java -ea -cp %s org.junit.runner.JUnitCore %s' % \
+            (':'.join(classpath), test)
+    ret = subprocess.call(command_str, stdout=log_file,
+            stderr=subprocess.STDOUT, shell=True)
+    return ret
+
+# Function that is run by JavaCheckstyleRunner when checkstyle is executed
+def RunJavaCheckstyle(files, log_file, classpath):
+    checkstyle_cmd = ('java -ea -cp %s -Dconfig_dir=java/checkstyle ' + \
+        'com.puppycrawl.tools.checkstyle.Main -c java/checkstyle/spar.xml %s') % \
+         (':'.join(classpath), ' '.join(files))
+    check_results = subprocess.check_output(checkstyle_cmd, shell=True)
+    check_results = check_results.replace('Starting audit...', '')
+    check_results = check_results.replace('Audit done.', '')
+    check_results = check_results.strip()
+    if len(check_results) > 0:
+        f = open(log_file.name, 'w')
+        f.write(check_results)
+        f.close()
+        return 1
+    else:
+        return 0
+
+# Runnable that is invoked when JavaCheckstyle is called on the environment
+class JavaCheckstyleRunner(object):
+    def __init__(self, test_fun, target_files, kwargs):
+        self.__test_fun = test_fun
+        self.__target_files = target_files
+        self.__kwargs = kwargs
+    def run(self, target = None, source = None, env = None):
+        log_file = tempfile.NamedTemporaryFile(delete=False)
+        running_str = ("Checkstyle completed. Output: %s. Result:" %
+            (log_file.name))
+        ret = self.__test_fun(self.__target_files, log_file, **self.__kwargs)
+        if ret == 1:
+            success_fail_str = 'FAILED'
+        else:
+            success_fail_str = 'SUCCESS'
+        print '%s [%s]\n' % (running_str, success_fail_str)
+        sys.stdout.flush()
+
+# Pseudo-Builder that prepares an Action to execute checkstyle
+class JavaCheckstyleBuilder(object):
+    added_alias = None
+    def __init__(self):
+        env.AddMethod(self.__add_checkstyle, 'JavaCheckstyle')
+    def __add_checkstyle(self, env, alias, target, deps, **kwargs):
+        checkstyle_runner = JavaCheckstyleRunner(RunJavaCheckstyle, target, kwargs)
+        checkstyle_action = Action(checkstyle_runner.run,
+            'Running checkstyle on all *.java files...')
+        checkstyle_alias = env.Alias(alias, deps, checkstyle_action)
+        env.AlwaysBuild(checkstyle_alias)
+        JavaCheckstyleBuilder.added_alias = checkstyle_alias
+    @classmethod
+    def create_checkstyle_target(cls):
+        AlwaysBuild(Alias('java_checkstyle', cls.added_alias))
+
+java_test_builder = common.GenericTestBuilder(
+    'java_test', 'JavaTest', RunJavaTest)
+java_checkstyle_builder = JavaCheckstyleBuilder()
+
+SConscript('src/SConscript', exports = 'env common')
+
+# create_checkstyle_target is called after src/SConscript completes and builds
+# all the relevant target information
+JavaCheckstyleBuilder.create_checkstyle_target()

@@ -1,0 +1,7 @@
+{% extends "ta1_overview_common.txt" %}
+
+{% block latencycontent %}
+
+The following subsections provide {{ outp.query_cat }} query performance information for the {{ outp.main_database_name }}; for {{ outp.query_cat }} performance information for other database sizes, please refer to Section \ref{sec:emp_dbs_performance}.
+
+{% endblock %}

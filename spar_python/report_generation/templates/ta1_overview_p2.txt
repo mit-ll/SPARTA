@@ -1,0 +1,44 @@
+{% extends "ta1_overview_common.txt" %}
+
+{% block latencycontent %}
+{% endblock %}
+
+{% block querytypespecificcontent %}
+
+{% if outp.id_graph or outp.star_graph %}
+
+The following graphs describe \texttt{select id} and \texttt{select *} range query latency as a function of the number of records returned and the size of the range for the {{ outp.maindb_short_name_lower }}:
+
+{% if outp.id_graph %}
+
+{{ outp.id_graph }}
+
+{% if outp.id_functionstr %}
+
+The following curve describes the latency (`{{ config.var_ql }}') of \texttt{select id} range queries as a function of the number of records returned (`{{ config.var_nummatches }}') and the size of the range (`{{ config.var_rangesize }}'), with $r^2$ value ${{ outp.id_rsquared }}$:
+
+$${{ outp.id_functionstr }}$$
+
+{% endif %}
+
+{% endif %}
+
+{% if outp.star_graph %}
+
+{{ outp.star_graph }}
+
+{% if outp.star_functionstr %}
+
+The following curve describes the latency (`{{ config.var_ql }}') of \texttt{select *} range queries as a function of the number of records returned (`{{ config.var_nummatches }}') and the size of the range (`{{ config.var_rangesize }}'), with $r^2$ value ${{ outp.star_rsquared }}$:
+
+$${{ outp.star_functionstr }}$$
+
+For range performance information for the other databases, please refer to Section \ref{sec:emp_dbs_performance}.
+
+{% endif %}
+
+{% endif %}
+
+{% endif %}
+
+{% endblock %}

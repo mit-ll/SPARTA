@@ -1,0 +1,108 @@
+The contents of this directory are summarized below. Please read the
+documentation for scripts-config/common/scripts/remote-runner to understand how
+the remote_runner utility works.
+
+- b3l_config.py: remote_runner config file for a local invocation of the 
+                 baseline with a third party
+- b3r_config.py: remote_runner config file for a remote invocation of the
+                 baseline with a third party
+- bll_config.py: remote_runner config file for a local invocation of the 
+                 baseline without a third party
+- blr_config.py: remote_runner config file for a remote invocation of the
+                 baseline without a third party
+- bll-sample-simple_muddler.py: remote_runner muddler file for a local
+                 invocation of the baseline without a third party that will
+                 execute the test script defined by
+                 scripts-config/ta3/test-scripts/sample-simple
+- bll-sample-mixed_muddler.py: remote_runner muddler file for a local
+                 invocation of the baseline without a third party that will
+                 execute the test script defined by
+                 scripts-config/ta3/test-scripts/sample-mixed
+- blr-sample-simple_muddler.py: remote_runner muddler file for a remote
+                 invocation of the baseline without a third party that will
+                 execute the test script defined by
+                 scripts-config/ta3/test-scripts/sample-simple
+- blr-sample-mixed_muddler.py: remote_runner muddler file for a remote
+                 invocation of the baseline without a third party that will
+                 execute the test script defined by
+                 scripts-config/ta3/test-scripts/sample-mixed
+- test-gen-bll-sample-simple.sh
+- test-gen-bll-sample-mixed.sh
+- test-gen-blr-sample-simple.sh
+- test-gen-blr-sample-mixed.sh
+                 helper bash script that automatically invokes the TA3 test
+                 generator and remote_runner for these tests, and creates
+                 archive directories for test artifacts and subsequently
+                 archives some test artifacts
+- YYY_config.py: template remote_runner config file that can be used to create
+                 custom config files
+- YYY-TCXXX_muddler.py: template remote_runner muddler file that can be used to
+                 create custom muddler files
+- test-gen-YYY-TCXXX.sh: template helper bash script that can be used to create
+                 custom tests
+
+REMOTE_RUNNER CONFIG FILES
+==========================
+These should define all SUTs that will be involved in the test, namely a server
+component, some third party components, and a template client component. See the
+comments in YYY_config.py for more information. A muddler file will be used to
+distribute these components to the appropriate desintations, and use the
+appropriate test harness to spawn the appropriate processes.
+
+REMOTE_RUNNER MUDDLER FILES
+===========================
+These are very large Python scripts that prepare everything that is needed for a
+test run. It uses the components defined in a remote_runner config file to
+distribute servers and third parties to their destinations, and uses the client
+component definition as a template that is spawned one or more times on each
+client workstation. Server SUTs will be spawned by a master test harness, while
+client SUTs will be spawned by slave test harnesses. If core pinning is enabled,
+each test harness will only have one core, while all other SUTs will receive the
+number of cores specified in the remote_runner config file. Additional
+constructs are in place to make sure that output is captured by all test harness
+invocations, and that client SUTs can be passed unique arguments.
+
+Beyond this, the muddler files are also critical to test generation. While the
+ta3-test-generator generates files that reflect ALL publications and
+subscriptions that will be observed in a test, the muddler parses these files to
+create scripts that can actually be run by the test harness. Tests generally
+come in two flavors: normal publication latency tests, and loaded publication
+latency tests. Normal publication latency tests are constructed to split
+all-subscriptions amongst all clients, then publish all-publications, then wait
+for a configurable amount of time for the publications to match. Loaded
+publication latency tests are constructed to again split all-subscriptions
+amongst all clients, then only subscribe a configurable percentage of them as
+background subscriptions. Then, all-publications are published in a separate
+thread as background traffic. Then, the rest of all-subscriptions are applied in
+a configurable number of sets. Before each set is applied, another thread of
+publications is launched to verify that the applied subscription changes
+actually take effect.
+
+remote_runner must run to completion to tranform the output of the
+ta3-test-generator into files runnable by the test harness. These test scripts
+will be located in scripts-config/ta3/test-scripts.
+
+There are a large number of variables that can be changed near the top of the
+file, with large amounts of commenting to attempt to explain what each variable
+does. These parameters dictate things like publication rates, mean payload
+sizes, how long to wait between certain milestones during the test, etc. 
+
+TEST-GEN BASH SCRIPTS
+=====================
+These are scripts that were thrown together to facilitate all the various tasks
+that needed to be performed to prepare and execute a test. Feel free to look at
+these as examples of how to generate data, execute remote_runner, and collect
+the relevant test artifacts. Note that the successful execution of these scripts
+is very dependent on file naming conventions and locations.
+
+There are also a large number of variables that can be changed at the top of the
+file, with some commenting to attempt to explain what each variable does. These
+generally control the inputs to ta3-test-generator (which is further documented
+in docs/ta3-release-docs/ta3-data-gen.txt). Keep in mind that some variables
+here are interdependent on some variables set in the remote_runner muddler file,
+so be sure to change the muddler and test-gen scripts in tandem.
+
+Also note that this does not automatically capture the timestamped test result
+directory after each test; you will need to capture these yourself. If you are
+running on multiple workstations, you may leverage the archive_test_artifacts
+script in scripts-config/common/scripts for this purpose.

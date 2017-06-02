@@ -1,0 +1,1 @@
+cat,sub_cat,perf,fields,"['no_queries','r_lower','r_upper','keyword_len','type']",P6,wildcard,"['LL','IBM1']","['city','lname','address']","[5,11,100,9,'middle-one']","[5,101,1000,9,'middle-one']"

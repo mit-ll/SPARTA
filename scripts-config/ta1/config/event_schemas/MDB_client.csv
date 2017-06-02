@@ -1,0 +1,7 @@
+eventID,name,description,optionalValue
+0,QUERY_RECVD,Query command received,
+1,QUERY_PARSD,Query command parsed,
+2,QUERY_ATMPT,Query submission to MariaDB attempted,Attempt count
+3,QUERY_SUBMT,Query submitted to MariaDB,
+4,RESULTS_RECVD,First byte of query results received
+5,MID_RESULTS_DUMMY,Dummy event that gets reported during results streaming

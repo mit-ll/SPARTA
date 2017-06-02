@@ -1,0 +1,110 @@
+Optimizaton so far:
+
+
+* TextGenerator.generate() was a huge bottleneck, in that each call to that
+method was expensive. The reason: each call to generate was iterating through
+the find-next-word loop thousands of times. Solutions: compile 
+text_generator.py in cython, moving the loop to C. Also, hoist work (e.g., 
+testing whether a token is punctuation) to learning, storing the pre-computed
+work in TextGenerator. Also, break some functions (e.g., add_token) into a
+'word' and 'punctuation' version, eliminating some uneeded tests.
+
+* Testing the Notes fields for various kinds of properties was expensive too.
+The reason: A lot of these tests needed to parse/process a huge unstructured
+string. Solution: have the generate() method of the 
+TextGenerator/TextDistribution classes return *not* an unstructured string but
+a new GeneratedText object. This object contains both the unstructured
+string *and* the same text in structured format (list of tokens, list of stems,
+whether alarmwords are present-- and if so, the distance-- etc.) Then the
+test can use the most efficient form. Also, this allows us to memoize expensive
+work across multiple tests.
+
+* Query aggregation was hugely expensive. The reason: function invocation in
+python is expensive, and we were doing a lot of it. For each row, we were 
+calling the map() and reduce() of each aggregator once. And to make matters
+worse, each of those methods was calling sub-methods each time, meaning that
+we were making 
+
+  (num rows) * (num aggregators) * (some constant)
+
+number of function calls, where 'some constant' was probably on the order
+of 6. (One for map() itself, one for reduce() itself, and four or so for
+sub aggregators.) Solution: extend the aggregator API to include a
+map_reduce_row_list() method,  which can hoist work across lots of rows. 
+We provide a default implementation in the BaseAggregatorAPI, which is itself 
+much faster than the loop we used to be using. But we can do even better by
+overriding this default in the aggregators in query_aggregator. There, where 
+we know exactly what map() and reduce() are doing, we can even even hoist
+namespace lookups (for, e.g., sv.VARS.ID) out of the loop and do them once per
+batch of rows. So, with this, we manage to reduce the number of function calls
+to:
+
+  (num BATCHES) * (num aggregators) * (a much smaller constant)
+  
+  
+* The query-aggregators were spending a lot of time converting row-field values
+to a standard format. The reason: each aggregator is doing the conversion 
+itself. Solution: move rows from builtin dictionaries to a *subclass* of
+builtin dictionaries which can also store these standard formats once computed.
+That is, we move rows to objects so as to amortize the cost of format-conversion
+across many aggregators. We need to be a little careful about this though-- 
+we can compute and store the standard-format values as part of the 
+__additem__() method. However, these standard-format values need to be stored 
+in an *attribute* of the row so that aggregators can access it through (fast) 
+attribute lookup rather than (slow) method invocation.
+
+
+
+
+
+
+Future optimization:
+
+Current benchmarking (30 October 2013) for query generation looks something 
+like this:
+
+Schema being executed: 10_8
+Number of rows: 1,000
+Step: row generation
+         175278068 function calls (153368179 primitive calls) in 61.515 seconds
+
+   Ordered by: internal time
+   List reduced from 208 to 10 due to restriction <10>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+23636288/1957072    9.620    0.000    9.620    0.000 <string>:44(iter)
+52858/44858    7.485    0.000   52.428    0.001 {filter}
+35455377    6.463    0.000    6.470    0.000 query_aggregator.py:118(extract_value)
+20080000    5.627    0.000    9.205    0.000 query_aggregator.py:197(match_row)
+  9520000    4.949    0.000   12.141    0.000 query_aggregator.py:301(match_row)
+  5266000    2.157    0.000    4.757    0.000 query_aggregator.py:393(match_row)
+     4000    2.081    0.001    3.477    0.001 {method 'generate' of 'text_generator.TextGenerator' objects}
+  9520000    2.003    0.000    2.003    0.000 query_aggregator.py:290(extract_value)
+  5824000    1.571    0.000    2.615    0.000 query_aggregator.py:228(match_row)
+   117377    1.553    0.000    1.561    0.000 query_aggregator.py:812(update_dict)
+
+Some thoughts about how to optimize further:
+
+* Where are we using string.iter()? If we can find that, we might be able to 
+  hoist that out.
+
+* We experimented with even inlining in query_generator.py than we eventually
+  committed. The reason is that we would want to inline the extract_value()
+  method, which is usually a one-liner. However, we would also have to *keep* 
+  that method around for the benefit of the FishingAggregator mixin. We decided
+  that the potential risks of duplicate code would not be worth it, but it's
+  good to have in the back pocket.
+
+* Preliminary experiments show that just using cython to compile 
+  query_aggregator.py gets that run-time, above, down to 43 seconds. For the
+  10TB database, this shrinks the expected run-time from 3.5 days to 2.5. 
+  Mayank and I (Jon) decided that this speedup wasn't worth the extra 
+  maintanence and trouble that cython brings (e.g., having an out-of-date
+  *.so file confusing the situation during crunch time) but it's nice to know
+  that it is there
+  
+* And if that isn't enough, then we change all the python classes in 
+  query_aggregator.py to cython classes, and we declare that the
+  match_row() methods return a C boolean. This would probably also allow us
+  to reap the benefits of the 'inlining' tactic above, via the
+  cython.inline directive.)

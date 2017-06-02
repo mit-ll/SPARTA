@@ -1,0 +1,39 @@
+Import('builder')
+
+builder.Library('stemmer', 'stemmer.cc',
+        libs = ['@porter-stemmer', '@logging'])
+
+builder.AddBoostTest('stemmer_test.cc',
+        libs = ['@stemmer',])
+
+builder.Library('common-baseline-protocols',
+        ['extensible-ready-handler.cc',
+         'numbered-command-receiver.cc',
+         'shutdown-handler.cc',
+         'clearcache-handler.cc'],
+        libs = ['#boost_thread', '@logging',
+                '@event-loop', '@line-raw-parser',
+                '@protocol-extension-manager',
+                '@string-algo', 'boost_system'])
+
+builder.Library('extensible-ready-handler-fixture',
+        'extensible-ready-handler-fixture.cc',
+        libs = ['@line-raw-parser', '@event-loop'])
+
+builder.AddBoostTest('clearcache-handler_test.cc',
+        libs = ['@common-baseline-protocols',
+                '@extensible-ready-handler-fixture'])
+
+builder.AddBoostTest('extensible-ready-handler_test.cc',
+        libs = ['@file-pipe', '@common-baseline-protocols',
+                '@extensible-ready-handler-fixture', '@util'])
+
+builder.AddBoostTest('numbered-command-receiver_test.cc',
+        libs = ['@common-baseline-protocols', '@util',
+                '@extensible-ready-handler-fixture', '@logging'])
+
+# MariaDB requires the following libraries to be included to compile against their
+# branch of libmysqlclient, even if we aren't using SSL functionality.
+builder.Library('mysql-connection', 'mysql-connection.cc',
+        libs = ['#mariadbclient', 'z', '@logging', 'ssl', 'pthread', 'dl',
+                'crypto'])
